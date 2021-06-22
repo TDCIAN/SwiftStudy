@@ -4,6 +4,31 @@
 - 프로그래밍에서 공통적으로 사용되는 기본 용어
 
 ### 1-1. Token,Expression, Statement
+- expression은 '식' 또는 '표현식'이라고 부른다
+- statement는 '문장' 또는 '구문'이라고 부른다
+- 국내에서는 expression을 '표현식', statement를 '문장'이라고 부른다
+
+
+- Tokens
+  - 공백이나 구두점으로 분리할 수 없는 가장 작은 단위의 요소를 Token이라고 한다
+  - 2+3;의 경우 2, +, 3, ; 총 네 가지 토큰으로 이루어졌다
+  - 토큰의 종류
+    - Identifiers(식별자)
+    - Keywords
+    - Punctuations(구두점)
+    - Operators(연산자)
+    - Literals
+  - 공백(space, 탭, 줄바꿈)은 프로그래밍에서 토큰을 구분하는 역할을 한다
+
+
+- Expressions
+  - 각 변수, 연산자, 함수 같은 것들이 모여서 하나의 값으로 표현되는 것을 Expressions(표현식)라고 한다
+  - let x = 7
+  - 참과 거짓으로 구분되는 것은 Boolean Expressions라고 한다
+  - 표현식은 코드를 평가했을 때 
+
+
+
 ### 1-2. Literal, Identifier, Keyword
 ### 1-3. Compile, Link, Run
 ### 1-4. Special Characters
