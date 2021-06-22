@@ -22,17 +22,89 @@
 
 
 - Expressions
-  - 각 변수, 연산자, 함수 같은 것들이 모여서 하나의 값으로 표현되는 것을 Expressions(표현식)라고 한다
+  - 각 변수, 연산자, 함수 같은 것들(Token)이 모여서 하나의 값으로 표현되는 것을 Expressions(표현식)라고 한다
   - let x = 7
   - 참과 거짓으로 구분되는 것은 Boolean Expressions라고 한다
-  - 표현식은 코드를 평가했을 때 
+  - 표현식은 코드를 평가했을 때 하나의 결과값을 나타내는 것을 의미한다.
+
+
+- Statements
+  - 하나 이상의 표현식(Expression)이 모이면 특정 작업을 실행하는 코드가 되는데, 이를 Statements라고 한다
+  - Swift에서는 문장의 끝에 ;를 붙이지 않아도 된다
 
 
 
 ### 1-2. Literal, Identifier, Keyword
+- Literals
+  - 코드 내에서 의미가 변하지 않고 사용되는 것을 Literal이라고 한다
+  - Integer Literals, Floating-point Literals, String Literals, Boolean Literals, nil Literals이 있다
+
+
+- Identifiers
+  - 변수의 이름, 자료형의 이름, 함수의 이름 등 모든 것이 식별자다
+  - let x = 7에서는 x가 식별자이다
+
+
+- Keywords
+  - 예약어라고 부르기도 한다
+  - let x = 7에서는 let이 keyword이다
+  - 키워드는 식별자 이름으로 사용할 수 없다
+  - 단어 사이에 포함되면 사용할 수 있다
+
+
+
 ### 1-3. Compile, Link, Run
+- Compile
+  - 사람이 작성한 코드를 컴퓨터가 이해할 수 있는 바이너리 코드로 변환하는 작업이 compile이다
+  - Compiler는 사람이 작성한 코드를 분석한 후 오류가 없는 경우에만 바이너리 코드를 생성한다
+  - Compiler는 소스코드를 분석할 때 Warning(경고)과 Error(오류)로 분류한다
+
+
+- Link
+  - 작성된 코드들을 서로 연결하는 것을 Link라고 한다
+  - Link를 담당하는 코드들도 Xcode 안에 내장되어 있고, 이런 도구들을 Linker라고 한다
+  - 커맨드 + R 키만 누르면 컴파일과 링크를 완료 후 실행한다
+
+
+- Run 
+  - 작성한 코드가 컴파일 후 링크되어 실행파일이 생성되는 시점까지를 Compile Time이라고 한다
+  - 실행된 생성 파일을 시뮬레이터나 실제 디바이스에서 실행하는 시점을 Run Time이라고 한다
+
+
+
 ### 1-4. Special Characters
+- 느낌표(!) -> Bool값을 반대로 바꿀 때 사용
+- ~ (Tilde) -> 비트 연산자에서 주로 사용
+- ` (Grave Accent / Back Tick) -> 키워드를 Identifier로 바꿀 때 사용
+- @ (At Symbol) -> 코드 자체의 특성을 지정하는 용도로 사용됨
+- # (Sharp / Pound / Hashtag) -> Swift가 제공하는 특수한 명령어들은 전부 #으로 시작한다
+- $ (Dollar Sign) -> 클로저에서 파라미터 이름을 대체할 때 주로 사용한다
+- % (Percent Sign) -> 나머지를 구할 때 사용
+- ^ (Caret 캐럿) -> 비트 연산자에서 사용
+- & (Ampersand) -> 주로 메모리 주소를 얻거나 참조를 전달할 때 사용
+- * (Asterisk) -> 곱하기 연산에서 사용
+- ( ) (Parentheses 퍼랜더시스) -> 함수를 호출하거나 계산의 순서를 정할 때
+- _ (Underscore) -> Wild Card 패턴을 구현할 때 자주 사용 됨
+- = (Equal Sign)
+- [ ] (Square Bracket) -> 컬렉션에 저장된 값에 접근할 때 사용
+- { } (Curly Bracket / Brace) -> 코드 블록의 범위를 지정할 때 사용
+- \ (Backtrash) -> String Interpolation 문법이나, KeyPath 표현식에서 사용
+- | (Vertical Bar / Pipe) -> 논리 연산이나 비트 연산에서 사용
+- ; (Semicolon) -> 쓰는 경우 거의 없다
+- : (Colon)
+- , (Comma)
+- . (Period) -> 메서드를 호출하거나 속성에 접근할 때
+- < > (Angle Bracket) -> 주로 크기를 비교할 때 사용, 제네릭에서는 형식 파라미터를 지정할 때 사용
+- / (Slash)
+- ? (Question Mark)
+
+
+
 ### 1-5. First Class Citizen
+- 상수와 변수에 저장할 수 있다(can be stored in variables and data structures)
+- 파라미터로 전달할 수 있다(can be passed as a parameter to a function)
+- 함수에서 리턴할 수 있다(can be returned as the result of a function)
+- 이 세 가지 특성을 암기해라
 
 
 ## Working with Variables
