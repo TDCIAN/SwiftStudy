@@ -208,18 +208,57 @@ MemoryLayout<Int>.size // 8
 ### 3-8. Type Inference
 ### 3-9. Type Annotation 이해하기
 ### 3-10. Type Safety
+- 형식 안정성
+- Swift는 형식을 엄격히 구분함으로써 형식 안정성을 보장한다
+
+
 ### 3-11. Type Conversion
+- Type Conversion vs Type Casting
+- Type Conversion은 메모리에 저장된 값을 다른 형식으로 바꿔서 새로운 값을 생성한다
+- Type Casting은 메모리에 저장된 값을 그대로 두고 컴파일러가 다른 형식으로 처리하도록 지시한다
+
 ### 3-12. 자료형이 다른 두 값을 더하기
 ### 3-13. Type Alias
+- 타입 앨리어스를 사용할 때는 Upper camel case로 만들어야 한다
+
 
 
 ## Operators
 - Swift가 제공하는 다양한 연산자를 활용해서 값을 계산하고 결과를 얻기
 
 ### 4-1. Operator Basics
+- 피연산자가 하나인 경우에는 '단항 연산자(Unary Operator)'라고 한다(ex: +a)
+- 피연산자가 두 개인 경우에는 '이항 연산자(Binary Operator)'라고 한다(ex: a + b)
+- 피연산자가 세 개인 경우에는 '삼항 연산자(Ternary Operator)', 또는 '조건 연산자'라고 한다(ex: a ? b : c)
+- 연산자가 피연산자 앞에 있으면 '전치연산자(Prefix Operator)'라고 한다(+a)
+- 연산자가 피연산자 뒤에 있으면 '후치연산자(Postfix Operator)'라고 한다(a+)
+- 두 피연산자 사이에 있으면 Infix Operator라고 한다(a + b)
+- 결합규칙(Associativity)
+  - 왼쪽에서 오른쪽으로 계산할 것인지, 오른쪽에서 왼쪽으로 계산할 것인지 두 가지 경우가 있다
+  - 왼쪽부터면 좌결합성(Left Associative), 오른쪽부터면 우결합성(Right Associative)이라고 한다
+- 괄호만 잘 쓰면 결합규칙을 굳이 외울 필요가 없다
+
+
+
 ### 4-2. Arithmetic Operators
+- 나머지 연산자(%)는 정수만 지원한다. 실수에 대한 나머지를 구할 때는 truncatingRemainder(dividingBy: )연산자를 활용해야 한다
+- 자료형에 저장할 수 있는 값의 범위를 벗어나는 문제를 overflow라고 한다
+- Swift는 overflow를 허용하지 않는다. overflow가 필요하다면 overflow 연산자를 사용해야 한다
 ### 4-3. 올바른 산술 연산자 채우기
 ### 4-4. Overflow Operators ***
+- a &+ b <- 이와 같은 식으로 연산자를 사용하면 overflow가 허용된다
+```swift
+let a: Int8 = Int8.max // 127
+let b: Int8 = a &+ 1 // -128 -> 메모리 구조에 따른 연산 결과
+
+let c: Int8 = Int8.min // -128
+let d: Int8 = c &- 1 // 127 -> 메모리 구조에 따른 연산 결과
+
+let e: Int8 = Int8.max &* 2 // -2
+
+```
+
+
 ### 4-5. 올바른 오버플로우 연산자 채우기
 ### 4-6. Comparison Operators
 ### 4-7. 올바른 비교 연산자 채우기
@@ -227,18 +266,90 @@ MemoryLayout<Int>.size // 8
 ### 4-9. 올바른 논리 연산자 채우기
 ### 4-10. Ternary Conditional Operator
 ### 4-11. 조건 연산자로 짝수 or 홀수 출력하기
-### 4-12. Short-circuit Evaluation, Side Effect ***
+### 4-12. Short-circuit Evaluation(단락평가), Side Effect ***
+- 논리 연산자가 논리식을 평가하는 방법
+- Swift는 논리식에서 결과를 얻을 수 있는 최소한의 연산만 수행한다(단락평가)
+- Side Effect는 코드의 실행 결과로 인해서 값 또는 상태가 변경되는 것을 의미한다. 반드시 부정적인 의미로 쓰이는 것은 아니라는 것을 기억해라
+
 ### 4-13. Bitwise Operators
+- 비트 연산자
+- 비트 연산자를 공부할 때는 논리 연산자를 염두에 두고 공부하면 좋다
+
 ### 4-14. Assignment Operators
+- 값을 저장하는데 사용하는 할당 연산자와 복합(Compound) 할당 연산자(Assignment Operators)에 대한 공부
 ### 4-15. Range Operators
+```swift
+1...10 // 가능
+10...1 // 불가능
+(1...10).reversed() // 가능
+
+let list = ["A", "B", "C", "D", "E"]
+list[2...] // ["C", "D", "E"]
+list[...2] // ["A", "B", "C"]
+list[..<2] // ["A", "B"]
+```
 ### 4-16. 올바른 범위 연산자 채우기
 
 
 ## Operators - 고급
 
 ### 4-17. Operator Methods ***
+- 기존 연산자가 새로운 형식을 지원하도록 확장하는 방법
+```swift
+struct Point {
+  var x = 0.0
+  var y = 0.0
+}
+
+extension Point: Equatable { // Equatable 프로토콜을 채용했다면 아래 == 메소드는 없어도 정상적으로 비교 연산이 가능하다
+  static func ==(lhs: Point, rhs: Point) -> Bool {
+    return (lhs.x == rhs.x) && (lhs.y == rhs.y)
+  }
+}
+
+let p1 = Point(x: 12, y: 34)
+let p2 = Point(x: 67, y: 89)
+
+p1 == p2 // false
+p1 != p2 // true
+
+extension Point {
+  static prefix func -(pt: Point) -> Point {
+    return Point(x: -pt.x, y: -py.y)
+  }
+}
+
+let p3 = -p1
+p3.x // -12
+p3.y // -34
+```
 ### 4-18. Int 형식에 저장된 값과 Double 형식에 저장된 값 더하기
 ### 4-19. Custom Operators ***
+- Swift가 제공하지 않는 새로운 연산자를 직접 구현하는 방법(사용자 정의 연산)
+```swift
+prefix operator +++
+
+extension Int {
+  static prefix func +++(num: inout Int) {
+    num += 2
+  }
+}
+
+var a = 1
++++a
+a // 3
+
+// 이항연산자는 infix로 선언한다
+infix operator *+*: MultiplicationPrecedence
+
+extension Int {
+  static func *+*(left: Int, right: Int) -> Int {
+    return (left * right) + (left * right)
+  }
+}
+
+1 *+* 2 // 4 -> (1 * 2) + (2 * 1)
+```
 ### 4-20. 2의 거듭 제곱을 계산하는 ** 연산자 구현하기
 
 
