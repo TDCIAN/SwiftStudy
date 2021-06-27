@@ -324,6 +324,36 @@ p3.x // -12
 p3.y // -34
 ```
 ### 4-18. Int 형식에 저장된 값과 Double 형식에 저장된 값 더하기
+```swift
+import Foundation
+
+let a = 1
+let b = 2.3
+
+var validCount = 0
+
+infix operator +: MultiplicationPrecedence
+
+extension Int {
+  static func + (left: Int, right: Double) -> Double {
+    return Double(left) + right
+  }
+  
+  static func + (left: Double, right: Int) -> Double {
+    return left + Double(right)
+  }
+}
+
+if a + b == 3.3 {
+  validCount += 1
+}
+
+if b + a == 3.3 {
+  validCount += 1
+}
+
+print(validCount)
+```
 ### 4-19. Custom Operators ***
 - Swift가 제공하지 않는 새로운 연산자를 직접 구현하는 방법(사용자 정의 연산)
 ```swift
@@ -351,12 +381,45 @@ extension Int {
 1 *+* 2 // 4 -> (1 * 2) + (2 * 1)
 ```
 ### 4-20. 2의 거듭 제곱을 계산하는 ** 연산자 구현하기
+```swift
+import Foundation
 
+var validCount = 0
+
+infix operator **: MultiplicationPrecedence
+
+extension Int {
+  static func **(left: Int, right: Int) -> Int {
+    if right == 0 {
+      return 1
+    } else {
+      var result: Int = 1
+      for _ in 0..<right {
+        result = result * left
+      }
+      return result
+    }
+  }
+}
+
+if 2 ** 3 == 8 {
+  validCount += 1
+}
+
+if 2 ** 10 == 1024 {
+  validCount += 1
+}
+
+print(validCount)
+
+```
 
 ## Conditional Statements
 - 조건문을 사용해서 조건에 따라 실행할 코드를 선택하는 방법
 
 ### 5-1. if statement
+- if 문에서 '문'은 곧 '문장(statement)'을 의미한다
+
 ### 5-2. if 문으로 짝수 or 홀수 구분하기
 ### 5-3. switch Statement
 ### 5-4. switch 문으로 요일 출력하기
