@@ -421,10 +421,84 @@ print(validCount)
 - if 문에서 '문'은 곧 '문장(statement)'을 의미한다
 
 ### 5-2. if 문으로 짝수 or 홀수 구분하기
+```swift
+import Foundation
+
+func solution(_ num:Int) -> String {
+    var result: String = ""    
+    if num % 2 == 0 {
+        result = "짝수"
+    } else {
+        result = "홀수"
+    }
+    return result
+}
+```
 ### 5-3. switch Statement
 ### 5-4. switch 문으로 요일 출력하기
+```swift
+import Foundation
+
+
+func solution(_ weekday: Int) -> String {
+    var ret: String = ""
+    
+    switch weekday {
+    case 0:
+        ret = "일요일"
+    case 1:
+        ret = "월요일"
+    case 2:
+        ret = "화요일"
+    case 3:
+        ret = "수요일"
+    case 4:
+        ret = "목요일"
+    case 5:
+        ret = "금요일"
+    case 6:
+        ret = "토요일"
+    default:
+        break
+    }
+    
+    return ret
+}
+```
+
+
 ### 5-5. guard Statement
+- Early Exit: 원하는 조건이 충족되지 않으면 불필요한 코드실행을 멈추고 바로 종료한다
+- guard문 내부(else)에는 종료하는 내용이 있어야 한다
+- guard문은 optional binding과 함께 사용된다
+
+```swift
+func validateUsingGuard() {
+  var id: String? = nil
+  
+  guard let str = id else { return }
+  guard str.count >= 6 else { return }
+  
+  print(str)
+}
+```
+- 복잡한 조건을 사용해야 하는 경우 if보다 guard를 쓴다
+
+
+
 ### 5-6. guard 문으로 코드 분기하기
+```swift
+import Foundation
+
+func solution(_ userName:String) -> Bool {
+    guard 
+userName.count >= 7 else
+ {
+        return false
+    }
+    return true
+}
+```
 
 
 ## Conditional Statements
