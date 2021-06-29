@@ -504,38 +504,327 @@ userName.count >= 7 else
 ## Conditional Statements
 
 ### 5-7. Value Binding Pattern ***
+- switch 문에서 활용할 수 있는 Value Binding Pattern
+- 매칭시킬 대상을 상수(let)나 변수(let)로 변환한 다음에 case 블록에서 활용하는 패턴
+- 주로 where 절과 결합해서 사용한다
+```swift
+let a = 1
+
+switch a {
+case var x where x > 100:
+  x = 200
+  print(x) // 1
+default:
+  break
+}
+
+let pt = (1, 2)
+
+switch pt {
+case let(x, y):
+  print(x, y)
+case (let x, let y):
+  print(x, y)
+case (let x, var y):
+  print(x, y)
+case let(x, _): // wildcard pattern
+  print(x)
+}
+```
+
+
 ### 5-8. Expression Pattern ***
+-직접 구현한 형식에 대해 패턴 매칭을 적용하는 방법
+```swift
+struct Size {
+  var width = 0.0
+  var height = 0.0
+  
+  static func ~=(left: Range<Int>, right: Size) -> Bool {
+    return left.contains(Int(right.width))
+  }
+}
+
+let s = Size(width: 10, height: 20)
+
+switch s {
+case 1..<9:
+  print("1 ~ 9")
+case 10..<99:
+  print("10 ~ 99") // 이게 실행됨
+default:
+  break
+}
+```
 
 
 ## Loop Statements
 - 반복문을 통해 코드를 반복해서 실행하는 방법
 
 ### 6-1. for-in Loop
+```swift
+let power = 10
+var result = 1
+
+for _ in 1...power {
+  result *= 2
+}
+
+result // 1024
+
+// 0부터(from) 10까지(to) 2씩(by)
+for num in stride(from: 0, to: 10, by: 2) {
+  print(num) // 0 2 4 6 8
+}
+```
 ### 6-2. for-in 반복문으로 지정된 범위까지의 합 구하기
+```swift
+import Foundation
+
+func solution(_ upperBound:Int) -> Int {
+    var sum = 0
+    
+    // 여기에서 구현해 주세요.
+    for i in 1...upperBound {
+        sum += i
+    }
+    
+    return sum
+}
+```
 ### 6-3. while Loop
+```swift
+var num = 100
+while num < 100 {
+  num += 1
+}
+print(num) // 100
+
+num = 100
+repeat {
+  num += 1
+} while num < 100
+print(num) // 101
+```
 ### 6-4. while 반복문으로 지정된 범위까지의 합 구하기
+```swift
+import Foundation
+
+func solution(_ upperBound:Int) -> Int {
+    var sum = 0
+    
+    // 여기에서 구현해 주세요.
+    var i = 1
+    while i <= upperBound {
+        sum += i
+        i += 1
+    }
+    
+    return sum
+}
+```
 
 
 ## Control Transfer Statements, Labeld Statements
 - 흐름 제어 구문을 통해 프로그램의 실행 흐름을 조절하는 방법에 대해 공부합니다.
 
 ### 7-1. Control Transfer Statements
+- 흐름 제어 구문에 대해 소개하고 "제어를 전달한다"는 것이 어떤 의미인지 설명
+- "제어를 전달한다"는 것은 현재 실행중인 scope에서 코드를 중지하고 다음에 실행할 코드를 바로 실행하는 것
+
+
 ### 7-2. break Statement
+- break를 통해서 실행중인 블록을 종료
+```swift
+let num = 1
+
+switch num {
+case 1...10:
+  print("begin block")
+  
+  if num % 2 != 0 {
+    break
+  }
+  
+  print("end block")
+
+default:
+  break
+}
+
+print("done")
+
+// num이 1일 때 -> begin block, done 순으로 출력
+// num이 2일 때 -> begin block, end block, done 순으로 출력
+```
 ### 7-3. break로 반복문 제어하기
+```swift
+import Foundation
+
+func solution(_ upperBound:Int) -> Bool {
+    var repeatCount = 0
+    
+    while repeatCount < Int.max {
+        
+        // 여기에서 구현해 주세요.
+        if repeatCount == upperBound {
+            break        
+        } else {
+            repeatCount += 1            
+        }
+    }
+    
+    return repeatCount == upperBound
+}
+```
+
+
 ### 7-4. continue Statement
+- continue를 통해 반복 회차를 종료하고 다음 반복으로 이동
+```swift
+for index in 1...10 {
+  if index % 2 == 0 {
+    continue
+  }
+  
+  print(index) // 1 3 5 7 9
+}
+
+for i in 1...10 {
+  print("OUTER LOOP", i)
+  
+  for j in 1...10 {
+    if j % 2 == 0 {
+      continue
+    }
+    
+    print(" inner loop", j)
+  }
+}
+/* 
+OUTER LOOP 1
+  inner loop 1
+  inner loop 3
+  inner loop 5
+  inner loop 7
+  inner loop 9
+OUTER LOOP 2
+  inner loop 1
+  ...
+*/
+```
+
 ### 7-5. 홀수 합 구하기
+```swift
+import Foundation
+
+func solution(_ upperBound:Int) -> Int {
+    var sum = 0
+    
+    // 여기에서 구현해 주세요.
+    for i in 1...upperBound {
+        if i % 2 == 0 {
+            continue
+        }
+        sum += i
+    }
+    
+    return sum
+}
+```
 ### 7-6. Labeled Statements
+- 문장에 이름을 붙이고 제어를 전달하는 방법
+```swift
+outer: for i in 1...3 {
+  print("OUTER LOOP", i)
+  
+  for j in 1...3 {
+    print(" inner loop", j)
+    
+    break outer // outer로 이름이 붙은 바깥 반복문을 중단시킴
+  }
+}
+
+/* 
+OUTER LOOP 1
+  inner loop 1
+*/
+```
 ### 7-7. 중첩된 반복문 제어하기
+```swift
+import Foundation
+
+var repeatCount = 0
+
+outer: for i in 1...10 {
+    for j in 1...10 {
+        for k in 1...10 {
+            if k > 3 {
+                break outer
+            }
+            repeatCount += 1
+        }
+    }
+}
+
+print(repeatCount)
+```
 
 
 ## Optionals
 - "값이 없음"을 표현하는 방법에 대해 공부
 
 ### 8-1. Optionals
+- "값이 없음"을 표현하는 옵셔널에 대해 설명하고, 값이 없음을 나타내는 특별한 값인 nil과 옵셔널 형식에 저장된 값을 추출하는 방법
 ### 8-2. 옵셔널 이해하기
+```swift
+// 문제: 최종적으로 "zero or nil"이 출력되어야 합니다.
+import Foundation
+
+var a: Int? = 0 
+
+if a! == 0 {
+    print("zero or nil")
+}
+```
 ### 8-3. Optional Binding
+```swift
+let a: Int? = 12
+let b: String? = "str"
+
+// a와 b가 nil이 아니고, b의 count가 5보다 클 때만 if문 내부가 실행된다
+if let num = a, let str = b, str.count > 5 {
+
+}
+```
 ### 8-4. 옵셔널 바인딩을 사용해서 안전한 코드로 바꾸기
+```swift
+// 옵셔널 바인딩을 활용해서 안전한 코드로 수정해 주세요.
+
+import Foundation
+
+let str: String? = "Hello"
+
+if let string = str {
+    print(string)
+} else {
+    print("empty string")
+}
+```
 ### 8-5. Implicitly Unwrapped Optionals
+- 암시적 추출 옵셔널, 자동 추출 옵셔널
+- 특정 컨텍스트에서 값이 자동으로 추출되는 IUO(Implicitly Unwrapped Optionals)
+- 실제 코드에서는 거의 사용되지 않는다
+- outlet을 연결할 때, API에서 IUO를 리턴할 때만 사용된다
+- 우리가 직접 선언하고 사용하는 것은 적절치 않다
+- 그냥 옵셔널과 옵셔널 바인딩을 사용해야 크래시를 줄일 수 있다
+
+```swift
+let num: Int! = 12
+let a = num
+
+let b: Int = num
+```
 
 ## Optionals - 고급
 
