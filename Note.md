@@ -829,18 +829,181 @@ let b: Int = num
 ## Optionals - 고급
 
 ### 8-6. Nil-Coalescing Operator
+- Nil-Coalescing 연산자를 활용해서 옵셔널에 값이 저장되어 있지 않을 때 사용할 값을 지정하는 방법
+- Nil-Coalescing Operator는 이항연산자
+```swift
+input = nil
+str = "Hello, " + (input ?? "Stranger")
+print(str) // Hello, Stranger
+```
+
 ### 8-7. ?? 연산자로 기본값 지정하기
+```swift
+문제 설명
+Nil-Coalescing 연산자를 활용해서 기본값을 지정한 다음 r 접두어가 붙어있는 상수에 저장해 주세요.
+
+제한
+기본값은 0, 0.0, "no value"로 제한합니다.
+
+import Foundation
+
+let a: Int? = nil
+let b: Double? = 12.3
+let c: String? = "Hello"
+
+// 아래 상수에 값을 저장해 주세요.
+let ra: Int = a ?? 0
+let rb: Double = b ?? 0.0
+let rc: String = c ?? "no value"
+
+print(ra, rb, rc)
+```
+
+
+
 ### 8-8. Optional Chaining ***
+- 하나의 표현식 내에서 다수의 옵셔널 형식 멤버에 접근하는 방법
+- 옵셔널 체이닝의 결과는 항상 옵셔널이다
+
+
 ### 8-9. Optional Pattern ***
+- 옵셔널은 열거형(enum)이다
+- case none
+- case some(Wrapped)
+- Generic type이기 때문에 어떤 타입도 사용 가능하다
+
+```swift
+let a: Int? = 0
+let b: Optional<Int> = 0
+
+if a == nil {
+
+}
+
+if a == .none {
+
+}
+
+if a == 0 {
+
+}
+
+if a == .some(0) {
+
+}
+
+if let x = a {
+  print(x) // 0
+}
+
+// enum case로 출력(위 코드와 같은 내용)
+if case .some(let x) = a {
+  print(x) // 0
+}
+if case let x? = a {
+  print(x) // 0
+}
+
+let list: [Int?] = [0, nil, nil, 3, nil, 5]
+
+for item in list {
+  guard let x = item else { continue }
+  print(x) // 0, 3, 5
+}
+
+for case let x? in list {
+  print(x) // 0, 3, 5
+}
+```
+
 ### 8-10. 옵셔널 패턴을 활용해서 유효한 값만 처리하기
+```swift
+문제 설명
+list 배열에는 숫자와 nil이 저장되어 있습니다.
+for-in 반복문으로 배열에 있는 숫자만 더해야 합니다.
+옵셔널 패턴을 활용해서 올바른 결과를 얻을 수 있도록 수정해 주세요.
+
+제한
+if문과 옵셔널 바인딩은 사용할 수 없습니다.
+
+import Foundation
+
+let list: [Int?] = [0, nil, nil, 3, nil, 5, 9]
+var sum = 0
+
+for case let num? in list {
+    sum += num
+}
+
+print(sum)
+```
 
 
 ## Functions
 - 자주 사용하는 기능을 함수로 만들고 재사용하는 방법
 
 ### 9-1. Functions
+- 코드 조각(함수는 특정 기능을 수행하는 코드 조각이다)을 반복적으로 사용하는 방법
+  - 함수의 장점
+  - 함수 선언 문법
+  - 함수 호출 문법
+
+```swift
+func sayHello() {
+  print("hello, Swift")
+}
+
+sayHello() // hello, Swift
+```
+
 ### 9-2. Return Values
+- 함수가 계산한 결과를 리턴하고 실행을 종료하는 방법
+```swift
+func add() -> Int {
+  return 1 + 2
+}
+
+let r = add() // 3
+
+if add() == 3 {
+  print("Three") // Three
+}
+
+func doSomething() {
+  let rnd = Int.random(in: 1...10)
+  
+  if rnd % 2 == 1 {
+    return // return value가 없으니까 함수의 실행을 중지
+  }
+  
+  print(rnd) // 2, 4, 6, 8, 10
+}
+```
+
+
 ### 9-3. Parameters
+- 파라미터를 통해 함수로 값을 전달하는 방법
+- 파라미터는 바디에서 사용할 수 있는 임시 상수이다 -> 별도의 값을 저장할 수 없다
+```swift
+// 함수 선언에서의 파라미터를 formal parameter라고 함
+func add(a: Int, b: Int) -> Int {
+  a = 12 // 불가능함 -> 별도의 값을 저장할 수 없음
+  return a + b
+}
+
+// 실제 사용되는 곳에서의 함수 파라미터는 Actual parameter 또는 Argument라고 함. 우리 말로는 '인자'라고 함
+add(a: 12, b: 34) // 46
+
+
+// Default Value
+func sayHello(to: String = "Stranger") {
+  print("Hello, \(to)")
+}
+
+sayHello(to: "Swift") // Hello, Swift
+sayHello() // Hello, Stranger
+```
+
 ### 9-4. Argument Label
 
 ## Functions - 고급
