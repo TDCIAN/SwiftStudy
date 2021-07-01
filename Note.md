@@ -1005,22 +1005,332 @@ sayHello() // Hello, Stranger
 ```
 
 ### 9-4. Argument Label
+```swift
+func sayHello(name: String) { // 함수의 형식을 지정할 때 들어가는 파라미터 name은 Formal Parameter라고 한다
+  print("Hello, \(name)")
+}
+
+sayHello(name: "Swift") // 함수를 호출할 때 들어가는 파라미터 name은 Actual Parameter 또는 Argument라고 한다
+
+// case 1
+sayHello(name: Type) // 이 때 name은 Parameter Name이면서 동시에 Argument Label임
+// case 2
+sayHello(label name: Type) // 이 때는 label이 Argument Label이고, name이 Parameter Name임
+
+
+==================================================
+// sayHello(name:)
+func sayHello(name: String) {
+  print("Hello, \(name)")
+}
+
+sayHello(name: "Swift")
+
+// sayHello(to:)
+func sayHello(to name: String) {
+  // print("Hellom \(to)") // 함수 내부에서 Argument Label을 사용할 수는 없다
+  print("Hello, \(name)")
+}
+
+sayHello(to: "Swift") // 함수를 호출할 때는 Argument Label을 사용한다
+
+// Wild Card Pattern
+func sayHello(_ name: String) {
+  print("Hello, \(name)")
+}
+
+sayHello("Swift")
+```
+- Argument Label을 사용하는 이유는 함수의 가독성을 높이기 위함이다
+- 함수를 호출할 때 쓰는 게 Argument Label이다
 
 ## Functions - 고급
 
 ### 9-5. Variadic Parameters ***
+- 하나의 파라미터를 통해 두 개 이상의 값을 전달하는 가변 파라미터
+```Swift
+print("Hello") // Hello
+print("Hello", "Swift") // Hello Swift
+
+func printSum(of nums: Int...) { // 이러면 [Int]를 파라미터로 받을 수 있다
+  var sum = 0
+  for num in nums {
+    sum += num
+  }
+  print(sum)
+}
+
+printSum(of: 1, 2, 3)
+printSum(of: 1, 2, 3, 4, 5)
+
+// 가변 파라미터는 함수에서 하나만 사용할 수 있다.
+func printSum(of nums: Int..., double: Double...) { // 이렇게 쓰면 에러 발생함
+
+}
+
+```
+
 ### 9-6. In-Out Paramters
+- 입출력 파라미터
+- 파라미터로 전달된 변수의 값을 함수 내부에서 직접 변경하는 방법에 대해 공부합니다.
+- Copy-In Copy-Out Memory Model
+
+```swift
+var num1 = 12
+var num2 = 34
+
+func swapNumber(_ a: inout Int, with b: inout Int) {
+  // var tmp = a // inout 쓸 때는 var 쓰면 안 된다
+  let tmp = a
+  a = b
+  b = tmp
+}
+
+num1 // 12
+num2 // 34
+
+// inout parameter를 가진 함수를 호출할 때는 Argument Parameter앞에 &(앰퍼샌드)를 붙여줘야 한다 
+swapNumber(&num1, with: &num2)
+
+num1 // 34
+num2 // 12
+```
+
+
 ### 9-7. 전달된 숫자의 합을 리턴하는 함수 구현하기
+```swift
+import Foundation
+
+// 여기에서 함수를 구현해 주세요.
+
+var count = 0
+func sumNums(_ nums: Int...) -> Int {
+    count += nums.count
+    var sum = 0
+    for num in nums {
+        sum += num
+    }
+    return sum
+}
+
+// 여기에서 구현한 함수를 호출하고 결과를 저장해 주세요.
+let result = sumNums(1, 2, 3, 4, 5)
+
+print(count, result)
+```
+
+
 ### 9-8. Function Notation
+- 함수를 읽는 법과 코드에서 표기하는 방법
+
+
 ### 9-9. Function Types ***
+- Swift 함수는 First-class Citizen이다
+  - 변수나 상수에 저장할 수 있다
+  - 파라미터로 전달할 수 있다
+  - 함수에서 리턴할 수 있다
+- function type에서 빈 괄호()는 비어있는 튜플(Empty Tuple)을 의미한다
+- Void는 리턴형이 없다는 것을 나타내는 특별한 키워드이다. Void는 ()와 같다
+
+```swift
+func sayHello() {
+  print("Hello, Swift")
+}
+
+let f1 = sayHello
+f1 // f1의 type은 () -> ()임
+f1() // Hello, Swift
+
+func printHello(with name: String) {
+  print("hello, \(name)")
+}
+
+let f2: (String) -> () = printHello(with:) // 자료형: (String) -> ()
+let f3 = printHello(with:) // 자료형: (String) -> ()
+f3("World) // Hello, World
+f3(with: "Hello") // 이렇게 쓰면 에러 발생함. Argument Label 쓰면 안 됨
+
+func add(a: Int, b: Int) -> Int {
+  return a + b
+}
+
+var f4: (Int, Int) -> Int = add(a:b:)
+f4(1, 2) // 3
+
+func add(_ a: Int, with b: Int) -> Int {
+  return a + b
+}
+
+f4 = add(_:with:)
+
+func swapNumbers(_ a: inout Int, _ b: inout Int) {
+
+}
+
+let f5 = swapNumbers(_:_:)
+f5
+
+func sum(of numbers: Int...) {
+}
+let f6 = sum(of:)
+f6
+
+func add(_ a: Int, _ b: Int) -> Int {
+  return a + b
+}
+
+func subtract(_ a: Int, _ b: Int) -> Int {
+  return a - b
+}
+
+func multiply(_ a: Int, _ b: Int) -> Int {
+  return a * b
+}
+
+func divide(_ a: Int, _ b: Int) -> Int {
+  return a / b
+}
+
+typealias ArithmeticFunction = (Int, Int) -> Int
+
+func selectFunction(from op: String) -> ArithmeticFunction? {
+  switch op {
+   case "+":
+    return add(_:_:)
+   case "*":
+    return multiply(_:_:)
+   case "-":  
+    return subtract(_:_:)
+   case "/":
+    return divide(_:_:)
+   default:
+    return nil
+  }
+}
+
+let af = selectFunction(from: "+")
+af?(1, 2) // 3
+selectFunction(from: "*")?(12, 34)
+```
+- 
+
+
 ### 9-10. Function Type 이해하기
+```swift
+문제 설명
+상수 f에 저장할 수 있는 add 함수를 구현해 주세요.
+
+문법 설명
+함수는 First-class Citizen입니다.
+함수 형식은 자료형과 리턴형으로 구성됩니다.
+
+import Foundation
+
+// 여기에서 add 함수를 구현해 주세요.
+func add(_ a: Int, _ b: Int) -> Int {
+    return a + b
+}
+let f: (Int, Int) -> Int = add
+let result = f(1, 2)
+
+print(result)
+
+```
+
+
 ### 9-11. Nested Functions ***
+- 함수 내부에 새로운 함수를 구현하는 방법
+- 내포된 함수
+```swift
+func outer() -> () -> () {
+  func inner() {
+    print("inner")
+  }
+  print("outer")
+  
+  return inner
+}
+
+let f = outer()
+f() // inner
+
+```
+
+
 
 
 ## Closures
 - 익명 코드 블록을 구현하는 방법
 
 ### 10-1. Closures
+- 클로저는 비교적 짧고 독립적인 코드 조각이다
+- self-contained code blocks이다
+- Objective-C에서는 block이라고 부르고, Java에서는 lambda라고 부른다
+- Swift에서 클로저에 포함되는 것은 세 가지이다.
+  - Named Closures
+    - Function
+    - Nested Function
+  - Unnamed Closures
+    - Anonymous Function
+
+
+- 클로저 표현식 문법
+```swift
+{ (parameters) -> ReturnType in // Closure Head
+  statements // Closure Body
+}
+
+{ statements } // 가장 단순한 클로저 형태
+
+let c = { print("Hello, Swift") } // 자료형은 () -> ()
+c() // Hello, Swift
+
+let c2 = { (str: String) -> String in
+  return "Hello, \(str)"
+}
+
+// 클로저에서는 argument label을 사용하지 않는다
+let result = c2("Closure")
+print(result) // Hello, Closure
+
+typealias SimpleStringClosure = (String) -> String
+func perform(closure: SimpleStringClosure) {
+  print(closure("iOS"))
+}
+
+perform(closure: c2) // Hello, iOS
+perform(closure: { (str: String) -> String in 
+  return "Hi, \(str)"
+})
+
+let products = [
+  "Macbook Air", "MacBook Pro", "iMac", "iMac Pro", "Mac Pro", "Mac mini", "iPad Pro", "iPad", "iPad mini",
+  "iPhone Xs", "iPhone Xr", "iPhone 8", "iPhone 7", "AirPods", "Apple Watch Series 4", "Apple Watch Nike+"
+]
+
+var proModels = products.filter({ (name: String) -> Bool in
+  return name.contains("Pro")
+})
+
+print(proModels) // ["MacBook Pro", "iMac Pro", "Mac Pro", "iPad Pro"]
+
+proModels.sort(by: { (lhs: String, rhs: String) -> Bool in 
+  return lhs.caseInsensitiveCompare(rhs) == .orderedAscending
+})
+
+print(proModels) // ["iMac Pro", "iPad Pro", "Mac Pro", "MacBook Pro"]
+
+print("Start")
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: { print("End") }) // 5초 뒤 End 출력
+
+// 문법 최적화(Syntax Optimization)
+DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+  print("End")
+}
+```
+
+
 ### 10-2. Syntax Optimization
 ### 10-3. 클로저와 문법 최적화
 
