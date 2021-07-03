@@ -1375,3 +1375,35 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
 ### 12-17. 올바른 문자열 옵션 사용하기
 ### 12-18. Character Set ***
 ### 12-19. 문자열에서 불필요한 문자 제거하기
+
+
+## Collection 
+- 다수의 데이터를 저장하는데 사용하는 Array, Dictionary, Set
+
+### 13-1. Collection Overview
+### 13-2. Array #1
+### 13-3. Array #2
+### 13-4. Array #3
+### 13-5. 배열 정렬하기
+### 13-6. 배열 검색하기
+### 13-7. Dictionary#1
+### 13-8. Dictionary#2
+### 13-9. Dictionary#3
+### 13-10. Set#1
+### 13-11. Set#2
+### 13-12. Set을 통한 집합 연산
+### 13-13. Iterating Collections
+
+
+
+## Enumeration
+- 동일한 이름에 속한 상수 그룹을 선언하고 다양하게 매칭시키는 방법
+
+### 14-1. Enumeration Types
+### 14-2. Raw Values
+### 14-3. 열거형으로 Http Status Code 처리하기
+
+## Enumeration - 고급
+
+### 14-4. Associated Values ***
+### 14-5. Enumeration Case Pattern ***
