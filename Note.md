@@ -1407,3 +1407,140 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
 
 ### 14-4. Associated Values ***
 ### 14-5. Enumeration Case Pattern ***
+
+
+
+## Structure and Class
+- 새로운 형식을 직접 구현하는 방법
+
+### 15-1. Structures and Classes
+### 15-2. Initializer Syntax
+### 15-3. 구조체를 선언하고 인스턴스 생성하기
+### 15-4. 클래스를 선언하고 인스턴스 생성하기
+### 15-5. Value Types vs Reference Types
+
+
+## Structure and Class - 고급
+
+### 15-6. Identity Operator ***
+### 15-7. Nested Types
+
+
+
+## Property
+- 형식 내부에 값을 저장하고 처리하는 방법
+
+### 16-1. Stored Property
+### 16-2. 새로운 저장 속성 추가하기
+### 16-3. Computed Property
+### 16-4. 새로운 계산 속성 추가하기
+### 16-5. Property Observer
+### 16-6. Type Property 
+### 16-7. 새로운 형식 속성 선언하기
+### 16-8. self & super
+
+
+
+## Method and Subscript
+- 형식과 연관된 코드 블록을 구현하는 방법과 서브스크립트 문법과 함께 사용할 수 있도록 구현하는 방법
+
+### 17-1. Instance Method
+### 17-2. 새로운 인스턴스 메소드 추가하기
+### 17-3. Type Method
+### 17-4. 형식 메소드 구현하기
+### 17-5. Subscript
+### 17-6. 서브스크립트 구현하기
+
+
+
+## Inheritance and Polymorphism
+- 상속을 통해 코드 중복을 줄이는 방법과 OOP의 특징 중 하나인 다형성에 대한 공부
+
+### 18-1. Inheritance
+### 18-2. Overriding
+### 18-3. 클래스 계층 구현하기
+### 18-4. Upcasting and Downcasting
+### 18-5. Type Casting
+### 18-6. Any and AnyObject
+### 18-7. Any 배열에 저장되어 있는 값 분류하기
+### 18-8. Overloading
+
+
+
+## Initializer and Deinitializer
+- 인스턴스의 생성과 해제를 담당하는 코드를 구현하는 방법
+
+### 19-1. Initializers
+### 19-2. Class Initializers
+### 19-3. Required Initializer
+### 19-4. Initializer Delegation
+### 19-5. 생성자 & 생성자 델리게이션 구현하기
+### 19-6. Failable initializer
+### 19-7. Deinitializer
+
+
+
+## Extension
+- 이미 존재하는 형식을 확장하는 방법
+
+### 20-1. Extension - Syntax
+### 20-2. Adding Properties
+### 20-3. 어제 날짜를 리턴하는 속성과 월, 일을 리턴하는 속성 추가하기
+### 20-4. Adding Methods
+### 20-5. 문자열 앞, 뒤 공백을 제거하는 메소드 추가하기
+### 20-6. Adding Initializers
+### 20-7. 년, 월, 일로 날짜를 초기화하는 생성자 추가하기
+### 20-8. Adding Subscripts
+### 20-9. 문자열에 정수 인덱스로 접근하는 Subscript 추가하기
+
+
+
+## Protocol
+- 프로토콜을 통해 형식이 구현해야 하는 요구사항을 선언하고 이 요구사항을 충족하도록 형식을 구현하는 방법
+
+### 21-1. Protocol Syntax
+### 21-2. Property Requirements
+### 21-3. Method Requirements
+### 21-4. Initializer Requirements
+### 21-5. Subscript Requirements
+### 21-6. Custom Type을 비교 연산자로 비교하기
+
+
+## Protocol - 고급
+
+### 21-7. Protocol Types ***
+### 21-8. Protocol composition ***
+### 21-9. Optional Requirements ***
+### 21-10. Protocol Extension ***
+
+
+
+## Memory, Value Typeand Reference Type
+- 메모리가 값을 저장하는 방법을 공부하고, 값 형식과 참조 형식의 차이점을 비교
+
+### 22-1. Memory Basics
+### 22-2. Value Type vs Reference Type
+### 22-3. ARC(Automatic Reference Counting)
+### 22-4. Strong Reference Cycle
+### 22-5. Closure Capture List
+
+
+
+## Generics
+- 형식에 독립적인 코드를 구현
+
+### 23-1. Generic Function
+### 23-2. 두 값을 비교하는 제네릭 함수 구현하기
+### 23-3. Generic Types
+### 23-4. Associated Types
+
+
+
+## Error Handling
+- 코드에서 발생할 수 있는 다양한 오류를 크래시 없이 처리하는 방법
+
+### 24-1. Error Handling
+### 24-2. do-catch Statements
+### 24-3. Optional Try
+### 24-4. defer Statements
+### 24-5. 오류 처리 패턴 구현하기
