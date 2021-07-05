@@ -1419,15 +1419,148 @@ print(a && b)
 ## Closures - 고급
 
 ### 10-4. Capturing Values
+- 클로저 내부에서 클로저 외부에 있는 값에 접근할 때 값이 처리되는 방식
+- Swift의 Closures는 Named Closures와 Unnamed Closures로 구분된다
+- Named Closures는 Function과 Nested Function으로 나뉜다
+- Unnamed Closures는 Anonymous Function이 있다
+- 세 가지 Closures는 값을 캡처하는 방식이 다르다
+- Function(Global Function)은 값을 캡처하지 않는다
+- Nested Function은 값을 캡처한다
+  - 자신을 포함하고 있는 함수 바디에 있는 값에 접근할 때 이 값을 캡처한다
+  - 클로저 표현식으로 작성한 클로저는 클로저 외부에 있는 값을 접근할 때 값을 캡처한다
+- 값을 캡처한다(Capturing Values)는 것은 무슨 의미일까? -> '값을 가져와서 쓴다'고 생각하면 쉽다
+```swift
+// Capturing Values
+var num = 0
+let c = { print("check point #1: \(num)") }
+c() // check point #1: 0 -> num의 값을 가져와서 썼다
+
+num += 1
+print("check point #2: \(num)") // check point #2: 1
+```
+- 값을 캡처하는 방식은 2가지이다.
+  - 첫 번째는 복사본을 캡처하는 방식이다 -> Objective-C가 이 방법을 사용한다
+  - 두 번째는 참조를 캡처하는 방식인데, Swift가 이 방법을 사용한다. 그냥 원본을 그대로 가져온다고 생각하면 된다.
+    - 클로저에서 캡처한 값을 바꾸면, 원래 값도 함께 바뀐다.
+
+```swift
+var num = 0
+let c = {
+  num += 1 // 클로저에서 캡처한 값을 바꾸고 있다 -> 원래 값도 함께 바뀜
+  print("check point #1: \(num)")
+}
+c() // check point #1: 1
+
+print("check point #2: \(num)") // check point #2: 1 -> Swift가 참조를 캡처하는 방식인데, 클로저 내부에서 num의 값을 1 증가 시켰으므로 원래 값도 바뀐다
+```
+- 클로저 내부에서 외부에 있는 값에 접근하면 값에 대한 참조를 획득한다
+- 클로저 내부에서 값을 바꾼다면, 원래 값도 함께 바뀐다
+- 클로저에 값을 캡처할 때 메모리 관리를 하지 않는다면, 참조 사이클 문제가 발생한다
+
+
+
 ### 10-5. Escaping Closure ***
+- Escaping과 Non escaping 방식으로 클로저를 실행했을 때 어떤 차이가 있는지 비교
+- Escaping Closure는 '무엇으로부터 탈출하는가'를 아는 것이 핵심이다
+- Escaping Closure는 함수의 실행이 종료된 후에도 실행될 수 있다
+- 함수의 정상적인 흐름을 탈출하는 것이다.
+- Escaping Closure는 함수의 시작 시점과 종료 시점이 특정되지 않는다
+
+```swift
+func performNonEscaping(closure: () -> ()) {
+  print("start")
+  closure()
+  print("end")
+}
+
+performNonEscaping {
+  print("closure")
+}
+
+/* 
+Non-Escaping Closure 실행 결과 -> 실행 흐름을 탈출하지 않는다
+start
+closure
+end
+*/
+
+
+func performEscaping(closure: @escaping () -> ()) {
+  print("start")
+  
+  DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+    closure()
+  }
+  
+  print("end")
+}
+
+performEscaping {
+  print("closure")
+}
+
+/* 
+Escaping Closure 실행 결과 -> 실행 흐름을 탈출
+start
+end
+closure
+*/
+```
+
 
 
 ## Tuples
 - 튜플을 통해 두 개 이상의 값을 하나로 묶어서 처리하는 방법
 
 ### 11-1. Tuples
+- 두 개 이상의 값을 저장하는 Compound Type인 튜플
+```swift
+let i = 12, 34 // 'Expected pattern' 에러 발생 -> Int의 경우 하나의 값만 저장할 수 있는 Scalar Type이기 때문
+let i = (12, 34) // 이렇게 하면 문제 없음 -> Tuple은 Compound Type이기 때문에 두 개 이상을 저장할 수 있다
+
+let data = ("<html>", 200, "OK", 12.34)
+// data의 자료형 -> (String, Int, String, Double)
+data.0 // "<html>"
+data.1 // 200
+data.2 // "OK"
+data.3 // 12.34
+
+data.1 = 404 // 'Cannot assign to property: 'data' is a 'let' constant' 에러 발생
+
+var mutableTuple = data
+mutableTuple.1 = 404
+mutableTuple.1 // 404
+```
+- 튜플에 저장된 값을 사용할 때는 점문법'.(dot) Syntax'을 사용한다
+- 점문법을 보통 Explicit Member Expression이라고 부른다
+
+
+
 ### 11-2. Named Tuples
+- 튜플 멤버에 이름을 붙여서 가독성을 높이는 방법
+```swift
+let data = ("<html>", 200, "ok", 12.34)
+data.0 // <html>
+
+let named = (body: "<html>", statudCode: 200, statusMessage: "OK", dataSize: 12.34)
+named.1 // 200
+named.statusCode // 200
+```
+
+
+
 ### 11-3. Tuple Decomposition
+- 튜플에 저장된 멤버를 개별 상수나 개별 변수에 저장하는 방법
+- Decomposition은 우리말로 '분해'를 의미한다
+```swift
+let data = ("<html>", 200, "OK", 12.34)
+
+let (body, code, message, size) = data
+let (body, code, message, _) = data // wild card 문법 사용 가능
+
+```
+
+
 ### 11-4. Tuple Matching
 ### 11-5. 튜플을 리턴하는 함수 구현하기
 
