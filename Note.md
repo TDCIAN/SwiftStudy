@@ -1332,7 +1332,89 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
 
 
 ### 10-2. Syntax Optimization
+- 문법 최적화를 통해서 클로저 코드를 단축시키는 방법
+```swift
+var proModels = products.filter({ (name: String) -> Bool in 
+  return name.contains("Pro")
+})
+
+products.filter({ 
+  return $0.contains("Pro") // $0, $1 같은 것들을 'Shorthand Argument Name'이라고 부른다.
+})
+
+products.filter({ 
+  $0.contains("Pro") // return을 생략한 것을 Implicit Returns라고 한다
+})
+
+products.filter() { 
+  $0.contains("Pro") // closure 부분만 따로 떼어내서 뒤에 붙이는 것을 Trailing Closure라고 한다
+}
+
+products.filter { // 다른 파라미터가 없으면 Argument 넣는 부분까지 생략한다 
+  $0.contains("Pro")
+}
+
+// 또 다른 예시
+// (1) 기본 표현
+proModels.sort(by: { (lhs: String, rhs: String) -> Bool in
+  return lhs.caseInsensitiveCompare(rhs) == .orderedAscending
+})
+
+// (2) 파라미터 형식과 리턴형 생략
+proModels.sort(by: { (lhs, rhs) in
+  return lhs.caseInsensitiveCompare(rhs) == .orderedAscending
+})
+
+// (3) 파라미터 이름을 생략하고 shorthand argument로 대체
+proModels.sort(by: {
+  return $0.caseInsensitiveCompare($1) == .orderedAscending
+})
+
+// (4) 단일 return문이라면 return을 생략(Implicit return)
+proModels.sort(by: { 
+  $0.caseInsensitiveCompare($1) == .orderedAscending
+})
+
+// (5) 클로저가 마지막 파라미터라면 Trailing Closure로 작성한다
+proModels.sort() {
+  $0.caseInsensitiveCompare($1) == .orderedAscending
+}
+
+// (6) 괄호 사이에 더 이상 파라미터가 없다면 괄호를 생략한다
+proModels.sort {
+  $0.caseInsensitiveCompare($1) == .orderedAscending
+}
+```
+
 ### 10-3. 클로저와 문법 최적화
+```swift
+
+containt(where:)은 배열에서 파라미터로 전달한 클로저를 통해 검색을 실행합니다.
+이 클로저는 문자열 파라미터를 받아서 불린값을 리턴합니다.
+
+다음 조건을 만족하도록 코드를 작성해 주세요.
+
+where 파라미터에 클로저를 전달하고 A 접두어가 포함된 문자열을 검색해 주세요. 접두어 검색 코드는 아래의 코드를 사용해 주세요. name.hasPrefix("A")
+(1)에서는 문법 최적화 없이 전체 문법으로 작성해 주세요.
+(2)에서는 문법 최적화를 활용해서 최대한 단순하게 작성해 주세요.
+a와 b에는 모두 true가 저장되어야 합니다.
+
+import Foundation
+
+let list = ["Apple", "Google", "Samsung", "Microsoft"]
+
+// where 파라미터로 인라인 클로저를 전달해 주세요. 문법 최적화를 적용하지 않은 전체 문법으로 작성해 주세요.
+let a = list.contains(where: { (name: String) -> Bool in
+    return name.hasPrefix("A")
+}) // (1)
+
+// 여기에서 contains(where:)를 호출하고 문법 최적화를 적용해 주세요.
+let b = list.contains() {
+    $0.hasPrefix("A")
+} // (2)
+
+print(a && b)
+```
 
 ## Closures - 고급
 
