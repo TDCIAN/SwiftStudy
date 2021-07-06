@@ -1562,16 +1562,133 @@ let (body, code, message, _) = data // wild card 문법 사용 가능
 
 
 ### 11-4. Tuple Matching
-### 11-5. 튜플을 리턴하는 함수 구현하기
+- switch문을 활용해서 튜플에 저장된 값을 매칭시키는 방법
+```swift
+let resolution = (3840.0, 1080.0)
 
+if resolution.0 == 3840 && resolution.1 == 2160 {
+  print("4K")
+}
+
+switch resolution {
+  case let(w, h) where w / h == 16.0 / 9.0:
+    print("16:9")
+  case (_, 1080): // 넓이는 신경쓰지 않고, 높이만 신경 쓰는 경우
+    print("1080p")
+  case (3840...4096, 2160):
+    print("4K")
+  default:
+    break
+}
+```
+
+
+
+### 11-5. 튜플을 리턴하는 함수 구현하기
+```swift
+문제 설명
+코드가 정상적으로 실행되도록 함수를 구현하고 결과를 출력해 주세요.
+
+제한
+함수는 name, age, address 상수를 튜플로 리턴해야 합니다.
+Named Tuple로 리턴해야 합니다.
+
+import Foundation
+
+// 여기에서 함수를 구현해 주세요.
+func convertToTuple(name: String, age: Int, address: String) -> (name: String, age: Int, address: String) {
+    return (name, age, address)
+}
+
+let name = "John doe"
+let age = 34
+let address = "Seoul"
+
+let t = convertToTuple(name: name, age: age, address: address)
+
+// 여기에서 튜플에 저장된 이름, 나이, 주소를 순서대로 출력해 주세요.
+print(t.name, t.age, t.address) // John doe 34 Seoul
+
+```
 
 ## String and Character
 - 가장 기초적인 형식인 문자열과 문자를 다루는 방법
 
 ### 12-1. Strings and Characters
+```swift
+var nsstr: NSString = "str"
+let swiftStr: String = nsstr as String
+nsstr = swiftStr as NSString
+// NSString과 String을 Toll-Free Bridged라고 표현한다 -> 서로 타입 캐스팅을 하는 것이 가능
+```
+
+
+
 ### 12-2. Multiline String Literals
 ### 12-3. String Interpolation
+- 문자열을 동적으로 구성하는 두 가지 방법
+  - String Interpolation
+  - 문자열 포멧 생성자
+  - 포멧 지정자
+  - 다국어 포멧 문자열
+  - Escape Sequence
+
+```swift
+// 포멧 지정자(Format Specifier)
+str = String(format: "%.1fKB", size) // 12.3KB
+String(format: "Hello, %@", "Swift") // Hello, Swift
+String(format: "%d", 12) // 12
+String(format: "%f", 12.34) // 12.3400000
+String(format: "%.3f", 12.34) // 12.340
+String(format: "%010.3f", 12.34) // 000012.340
+
+String(format: "[%d]", 123) // [123]
+String(format: "[%10d]", 123) // [   123] -> 오른쪽 정렬
+String(format: "[%-10d]]", 123) // [123   ]] -> 왼쪽 정렬
+
+let firstName = "Yoon-ah"
+let lastName = "Lim"
+
+let korFormat = "그녀의 이름은 %2$@ %1$@ 입니다." // 두 번째로 들어오는 인자가 먼저 나오도록 설정
+let engFormat = "Her name is %1$@ %2$@."
+
+String(format: korFormat, firstName, lastName) // 그녀의 이름은 Lim Yoon-ah 입니다.
+String(format: engFormat, firstName, lastName) // Her name is Yoon-ah Lim.
+
+
+print("A\tB") // A  B
+print("C\nD") 
+/* 
+C
+D
+*/
+```
+
 ### 12-4. 원하는 포멧으로 문자열 출력하기
+```swift
+아래와 같이 출력되도록 코드를 구현해 주세요.
+
+오늘은 2019년 10월 14일 입니다. 날씨는 '맑음', 온도는 10.2도 입니다.
+
+import Foundation
+
+let year = 2019
+let month = 10
+let day = 14
+
+// 오늘은 2019년 10월 14일 입니다.
+let dateStr = String(format: "오늘은 %d년 %d월 %d일 입니다.", year, month, day)
+
+let weather = "맑음"
+let temperature = 10.23456
+
+// 날씨는 '맑음', 온도는 10.2도 입니다.
+let weatherStr = String(format: "날씨는 '\(weather)', 온도는 %.1f도 입니다.", temperature)
+
+// String Interpolation 문법으로 dateStr, weatherStr을 공백 하나로 연결해 주세요.
+let finalStr = "\(dateStr) \(weatherStr)"
+print(finalStr)
+```
 ### 12-5. String Indices
 ### 12-6. 문자열에서 원하는 범위 추출하기
 ### 12-7. String Basics
