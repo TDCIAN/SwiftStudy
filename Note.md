@@ -2010,7 +2010,7 @@ if let range = english.range(of: "p", options: [.backwards]) {
 // Anchored Option: 검색 범위를 문장의 시작이나 끝부분으로 설정하고 시작
 let str = "Swift Programming"
 
-if let result = str.rrange(of: "Swift") {
+if let result = str.range(of: "Swift") {
   print(str.distance(from: str.startIndex, to: result.lowerbound)) // 0 -> "Swift"의 인덱스는 0
 } else {
   print("not found")
@@ -2177,11 +2177,202 @@ print(result)
 - 다수의 데이터를 저장하는데 사용하는 Array, Dictionary, Set
 
 ### 13-1. Collection Overview
+- Foundation Collection: 객체(Object) 형식의 데이터만 저장할 수 있다
+  - NSArray
+  - NSDictionary
+  - NSSet
+
+- Swift Collection: 객체(Object) 형식과 값(Value) 형식 모두 저장할 수 있다
+  - Array
+  - Dictionary
+  - Set
+
+- 컬렉션이 변경되지 않는다면, 메모리 최적화를 위해 항상 동일한 데이터를 사용한다(Copy-on-write)
+
+
+
 ### 13-2. Array #1
+- 배열의 특징과 기초적인 조작 방법
+  - 배열의 일반적인 특징
+  - 배열 리터럴과 배열 자료형
+  - 요소의 수 확인
+  - 서브스크립트 문법
+  - 
+```swift
+let fruits = ["Apple", "Banana", "Melon"]
+
+fruits[0] // Apple
+
+fruits[2] // Melon
+
+fruits[0...1] // ["Apple", "Banana"]
+
+fruits[fruits.startIndex] // Apple
+
+fruits[fruits.index(before: fruits.endIndex)] // Melon
+
+fruits.first // Apple
+fruits.last // Melon
+
+```
+
+
 ### 13-3. Array #2
+- 배열에 새로운 요소를 추가하고 삭제하는 방법
+  - 배열 마지막에 새로운 요소 추가
+  - 특정 위치에 새로운 요소 추가
+  - 특정 범위 교체
+  - 요소 삭제
+  - 범위 삭제
+
+```swift
+Adding Elements
+
+var alphabet = ["A", "B", "C"]
+
+alphabet.append("E") // ["A", "B", "C", "E"]
+alphabet.append(contentsOf: ["F", "G"]) // ["A", "B", "C", "E", "F", "G"]
+alphabet.insert("D", at: 3) // ["A", "B", "C", "D", "E", "F", "G"]
+alphabet.insert(contentsOf: ["a", "b", "c"], at: 0) // ["a", "b", "c", "A", "B", "C", "D", "E", "F", "G"]
+
+특정 범위 교체
+alphabet[0...2] = ["x", "y", "z"]
+alphabet // ["x", "y", "z", "A", "B", "C", "D", "E", "F", "G"]
+
+alphabet.replaceSubrange(0...2, with: ["a", "b", "c"])
+alphabet // ["a", "b", "c", "A", "B", "C", "D", "E", "F", "G"]
+
+alphabet[0...2] = ["z"]
+alphabet // ["z", "A", "B", "C", "D", "E", "F", "G"]
+
+특정 범위 삭제
+alphabet[0..<1] = []
+alphabet // ["A", "B", "C", "D", "E", "F", "G"] 
+
+Removing Elements
+alphabet = ["A", "B", "C", "D", "E", "F", "G"]
+alphabet.remove(at: 2) // "C"
+alphabet // ["A", "B", "D", "E", "F", "G"]
+
+alphabet.removeFirst() // "A"
+alphabet // ["B", "D", "E", "F", "G"]
+
+alphabet.removeFirst(2)
+alphabet // ["E", "F", "G"]
+
+alphabet.removeAll() // []
+
+alphabet.popLast() // nil -> 비어있으니까 (에러 발생 안하므로 안전하게 사용 가능)
+alphabet = ["A", "B", "C", "D", "E", "F", "G"]
+alphabet.popLast() // ["A", "B", "C", "D", "E", "F"]
+alphabet
+
+alphabet.removeSubrange(0...2) // ["D", "E", "F"]
+alphabet // ["D", "E", "F"]
+
+```
+
 ### 13-4. Array #3
+- 배열을 비교하고, 원하는 요소를 검색하고, 요소를 원하는 순서로 정렬하는 방법
+  - 배열 비교
+  - 요소 검색
+  - 첫 번째 인덱스 검색
+  - 첫 번째 요소 검색
+  - 배열 정렬과 역순 정렬
+  - 특정 위치의 요소 교체
+  - 랜덤 섞기
+
+```swift
+let a = ["A", "B", "C"]
+let b = ["a", "b", "c"]
+
+a == b // false
+a != b // true
+
+a.elementsEqual(b) // false
+
+a.elementsEqual(b) { (lhs, rhs) -> Bool in
+  return lhs.caseInsensitiveCompare(rhs) == .orderedSame
+} // true
+
+Finding Elements
+let nums = [1, 2, 3, 1, 4, 5, 2, 6, 7, 5, 0]
+nums.contains(1) // true
+nums.contains(8) // false
+
+nums.contains { (n) -> Bool in
+  return n % 2 == 0
+} // true
+
+nums.first { (n) -> Bool in
+  return n % 2 == 0
+} // 2 -> 가장 첫 번째 짝수
+
+nums.firstIndex { (n) -> Bool in
+  return n % 2 == 0
+} // 1 -> 2가 두 번째(1번 인덱스)에 있으니까
+
+nums.firstIndex(of: 1) // 0 -> 첫 번째 1은 0번 인덱스에 있으니까 
+nums.lastIndex(of: 1) // 3 -> 마지막 1은 3번 인덱스에 있으니까
+
+Sorting on Array
+sort -> 배열을 직접 정렬
+sorted -> 정렬된 새로운 배열을 리턴
+
+nums.sorted() // [0, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7] 
+nums // [1, 2, 3, 1, 4, 5, 2, 6, 7, 5, 0]
+
+nums.sorted { (a, b) -> Bool in
+  return a > b
+} // [7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 0]
+
+nums.sorted().reversed() // ReversedCollection<Array<Int>>
+[Int](nums.sorted().reversed()) // [7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 0]
+
+가변배열 정렬
+var mutableNums = nums
+mutableNums.sort() // [0, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7]
+mutableNums.reverse() // [7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 0]
+
+mutableNums // [7, 6, 5, 5, 4, 3, 2, 2, 1, 1, 0]
+mutableNums.swapAt(0, 1) // [6, 7, 5, 5, 4, 3, 2, 2, 1, 1, 0]
+
+랜덤 섞기
+mutableNums.shuffle()
+```
+
 ### 13-5. 배열 정렬하기
+```swift
+import Foundation
+
+var list = [9, 5, 4, 2, 7, 1, 0, 3, 6, 8]
+
+// 여기에서 list 배열을 내림차순으로 정렬해 주세요.
+list.sort {
+    $0 > $1
+}
+
+// 여기에서 list 배열을 오름차순으로 정렬한 새로운 배열을 저장해 주세요.
+let a = list.sorted()
+print(list == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] && list.reversed() == a)
+```
+
+
+
 ### 13-6. 배열 검색하기
+```swift
+import Foundation
+
+let list = ["iPad Pro", "iPhone Xs", "MacBook", "iPhone Xs MAX", "iPad", "MacBook Air", "iPhone Xr", "iPad Mini", "iPhone 8", "MacBook Pro", "iPhone 8 Plus", "iMac", "AirPods", "iMac Pro", "Magic Mouse 2", "Mac Pro", "Magic Keyboard", "Mac mini"]
+
+// 여기에서 필터링 코드를 구현해 주세요.
+var filtered = list.filter { $0.contains("iPhone") }
+
+filtered.sort()
+print(filtered == ["iPhone 8", "iPhone 8 Plus", "iPhone Xr", "iPhone Xs", "iPhone Xs MAX"])
+```
+
+
 ### 13-7. Dictionary#1
 ### 13-8. Dictionary#2
 ### 13-9. Dictionary#3
