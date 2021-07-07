@@ -2133,11 +2133,45 @@ if let range = str.rangeOfcharacter(from: charSet) {
 if let range = str.rangeOfcharacter(from: charSet, options: [.backwards]) {
   print(str.distance(from: str.startIndex, to: range.lowerBound)) // 뒤에서 검색했을 때 첫 번째가 "I"이므로, "I"의 인덱스인 6이 출력됨 
 }
+
+str " A p p l e "
+charSet = .whiteSpaces
+let trimmed = str.trimmingCharacters(in: charSet)
+print(trimmed) // A p p l e
+
+var editTarget = CharacterSet.uppercaseLetters
+editTarget.insert("#") // # 문자가 추가됨
+editTarget.insert(charactersIn: "~!@") // 여러개를 추가할 때는 charactestIn
+
+editTarget.remove("A") // A문자 하나를 삭제
+editTarget.remove("charactersIn: "BCD") // 세 문자를 삭제
+
+let customCharSet = CharacterSet(charactersIn: "@.")
+let email = "userId@example.com"
+let components = email.components(separatedBy: customCharSet) // "userId", "example", "com" -> @와 .으로 구분된 내용들
+
 ```
 
 
 ### 12-19. 문자열에서 불필요한 문자 제거하기
+```swift
+문제 설명
+CharacterSet을 활용해서 [ ] 문자와 앞 뒤 공백을 제거해 주세요.
 
+import Foundation
+
+var str = "[  http://www.programmers.co.kr  ]"
+
+// 여기에서 CharacterSet을 생성해 주세요.
+var charSet = CharacterSet.whitespaces
+
+// 여기에 결과를 저장해 주세요.
+var result = str.trimmingCharacters(in: ["[", "]"])
+result = result.trimmingCharacters(in: charSet)
+
+print(result)
+
+```
 
 ## Collection 
 - 다수의 데이터를 저장하는데 사용하는 Array, Dictionary, Set
