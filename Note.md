@@ -1689,23 +1689,453 @@ let weatherStr = String(format: "날씨는 '\(weather)', 온도는 %.1f도 입�
 let finalStr = "\(dateStr) \(weatherStr)"
 print(finalStr)
 ```
+
+
+
 ### 12-5. String Indices
+- 문자열 인덱스로 특정 문자의 위치를 표현하는 방법
+```swift
+let str = "Swift"
+str.startIndex // String.Index 타입
+let firstCh = str[str.startIndex]
+print(firstCh) // S
+
+let lastCh = str[str.endIndex] // String.Index 타입.
+print(lastCh) // 이 상태라면 String index is out of bounds 에러 발생
+
+// 정상적으로 문자열의 마지막 인덱스에 접근하는 방법
+let lastCharIndex = str.index(before: str.endIndex)
+let lastCh = str[lastCharIndex]
+print(lastCh) // t
+
+let secondCharIndex = str.index(after: str.startIndex)
+let secondCh = str[secondCharIndex]
+print(secondCh) // w
+
+var thirdCharIndex = str.index(str.startIndex, offsetBy: 2) // 첫 번째 인덱스에서 두 번째 만큼 떨어진 인덱스(세 번째)
+var thirdCh = str[thirdCharIndex]
+print(thirdCh) // i
+
+thirdIndex = str.index(str.endIndex, offsetBy: -3) // 마지막 인덱스에서 끝에서 세 번째 인덱스
+thirdCh = str[thirdCharIndex]
+print(thirdCh) // i
+
+// 안전하게 사용하기
+if thirdCharIndex < str.endIndex && thirdCharIndex >= str.startIndex {
+
+}
+
+```
+
+
+
 ### 12-6. 문자열에서 원하는 범위 추출하기
+
+
 ### 12-7. String Basics
+- 문자열 조작에 필요한 기초 테크닉
+```swift
+var str = "Hello, Swift String"
+var emptyStr = ""
+emptyStr = String()
+
+let a = String(true) // "true"
+let b = String(12) // "12"
+let c = String(12.34) // "12.34"
+
+let hex = String(123, radix: 16) // "7b" -> 16진수 123
+let octal = String(123, radix: 8) // "173" -> 8진수 123
+let binary = String(123, radix: 2) // "1111011" -> 2진수 123
+
+let repeatStr = String(repeating: "G", count: 7) // "GGGGGGG"
+let unicode = "\u{1f44f}" // 박수문자
+
+let e = "\(a) \(b)" // "true 12"
+let f = a + " " + b // "true 12"
+str += "!!" // "Hello, Swift String!!"
+
+str.count // 21
+str.isEmpty // false
+str == "Apple" // false
+"apple" != "Apple" // true -> 대소문자 구분 한다
+"apple" < "Apple" // false -> 소문자 apple이 대문자 Apple보다 크다고 판단
+
+str.lowercased() // 모든 문자들을 소문자로 변경 -> 원본은 건드리지 않는다
+str.uppercased() // 모든 문자들을 대문자로 변경
+
+"apple ipad".capitalized() // 첫 글자를 대문자로 변경 -> "Apple Ipad"
+
+for char in "Hello" {
+  print(char)
+}
+/* 
+H
+e
+l
+l
+o
+*/
+
+let num = "1234567890"
+num.randomElement()
+
+num.shuffled() // 문자열을 임의로 섞음
+```
+
+
+
 ### 12-8. Substring
+```swift
+let str = "Hello, Swift"
+let l = str.lowercased() // hello, swift
+
+var first = str.prefix(1) // 새로운 메모리 공간을 사용하지 않는다
+// 핵심: substring은 원본 문자열의 메모리를 공유한다
+first.insert("!", at: first.endIndex)
+str // "Hello, Swift"
+first // "H!" -> Copy on Write Optimization(Swift의 메모리 최적화 기법)
+
+let s = str.[..<str.index(str.startIndex, offsetBy: 2)] // "He"
+
+str[str.index(str.startIndex, offsetBy: 2)...] // "llo, Swift"
+
+let lower = str.index(str.startIndex, offsetBy: 2) // String.Index
+let upper = str.index(str.startIndex, offsetBy: 5) // String.Index
+str[lower ... upper] // "llo,"
+```
+
+
+
 ### 12-9. String Editing #1
+- 메소드를 활용해서 문자열을 편집하는 방법
+```swift
+var str = "Hello"
+str.append(", ")
+print(str) // "Hello, "
+
+let s = str.appending
+// append 메소드는 리턴형이 Void, appending 메소드는 리턴형이 String
+
+let s = str.appending("Swift")
+str // "Hello, "
+s // "Hello, Swift"
+
+"File size is ".appendingFormat("%.1f", 12.3456) // "File size is 12.3"
+
+var str = "Hello, Swift"
+str.insert(",", at: str.index(str.startIndex, offsetBy: 5)) // "Hello, Swift"
+
+if let sIndex = str.firstIndex(of: "S") {
+  str.insert(contentsOf: "Awesome", at: sIndex)
+}
+print(str) // "Hello, AwesomeSwift"
+```
+
+
+
 ### 12-10. String Editing #2
+- 메소드를 활용해서 문자열을 편집하는 방법
+```swift
+var str = "Hello, Objective-C"
+if let range = str.range(of: "Objective-C") {
+  str.replaceSubrange(range, with: "Swift")
+}
+str // Hello, Swift
+
+if let range = str.range(of: "Hello") {
+  let s = str.replacingCharacters(in: range, with: "Hi") // replacing은 원본을 변경시키지 않는다
+  s // Hi, Swift
+  str // Hello, Swift
+}
+
+
+var s = str.replacingOccurences(of: "Swift", with: "Awesome Swift")
+s // "Hello, Awesome Swift"
+s = str.replacingOccurences(of: "swift", with: "AwesomeSwift") // str에는 Swift만 있지 swift는 없으니까 검색에 실패함 -> 원본을 그대로 돌려줌
+s // "Hello, Swift"
+s = str.replacingOccurrences(of: "Swift", with: "Awesome Swift", options: [.caseInsensitive]) 
+s // "Hello, Awesome Swift"
+
+// Removing Substrings
+var str = "Hello, Awesome Swift!!!"
+
+let lastCharIndex = str.index(before: str.endIndex)
+
+var removed = str.remove(at: lastCharIndex) // "!"
+
+str // "Hello, Awesome Swift!!"
+
+removed = str.removeFirst()
+str // "ello, Awesome Swift!!"
+str.removeFirst(2) // "lo, Awesome Swift!!"
+str // "lo, Awesome Swift!!"
+
+str.removeLast // !
+str // "lo, Awesome Swift!"
+
+str.removeLast(2) // "lo, Awesome Swif"
+str // "lo, Awesome Swif"
+
+if let range - str.range(of: "Awesome") {
+  str.removeSubrange(range)
+  str // "lo, Swif"
+}
+
+str.removeAll()
+str // ""
+
+str.removeAll(keepingCapacity: true) // 이렇게 하면 다 지우더라도 메모리 공간에는 남아 있다 -> 불필요한 메모리 오버헤드가 줄어들 수 있음
+str = "Hello, Awesome Swift!!!"
+
+var substr = str.dropLast() // "Hello, Awesome Swift!!"
+
+substr = str.dropLast(3) // "Hello, Awesome Swift" -> 새로운 메모리 공간이 생성된 건 아님(str과 메모리 공유)
+substr = str.drop(while: { (ch) -> Bool in 
+  return ch != ","
+})
+substr // ",Awesome Swift!!!"
+```
+
+
+
 ### 12-11. 문자열에서 원하는 부분 편집하기
+```swift
+// 문자열에서 i를 모두 삭제하고 소문자 o는 대문자 O로 바꿔 주세요.
+
+import Foundation
+
+let str = "Lorem ipsum dolor sit amet"
+
+var result = str.replacingOccurrences(of: "o", with: "O")
+result = result.replacingOccurrences(of: "i", with: "")
+
+print(result == "LOrem psum dOlOr st amet")
+```
+
+
 ### 12-12. String Comparison
+- 문자열을 비교하는 방법
+```swift
+let largeA = "Apple"
+let smallA = "apple"
+let b = "Banana"
+
+largeA == smallA // false
+largeA != small! // true
+
+largeA < smallA // true -> 대문자 A에 할당된 아스키코드가 소문자 a보다 작기 때문에 true가 나온다
+largeA < b // true -> 대문자 A가 소문자 b보다 작기 때문
+smallA < b // false -> 아스키코드에서는 소문자 a가 소문자 b보다 크다
+
+largeA.compare(smallA) // NSComparisonResult 타입
+largeA.compare(smallA) == .orderedSame // false
+largeA.caseInsensitiveCompare(smallA) == .orderedSame // true -> 대소문자 구분 안함
+largeA.compare(smallA, options: [.caseInsensitive]) == .orderedSame // true
+
+let str = "Hello, Swift Programming!"
+let prefix = "Hello"
+let suffix = "Programming" // suffix는 '접미사'를 의미한다
+
+str.hasPrefix(prefix) // true -> 둘 다 Hello로 시작하니까
+str.hasSuffix(suffix) // false -> str은 Programming!으로 끝나는데 suffix는 Programming으로 끝나니까 false임
+```
+
 ### 12-13. String Searching
+- 문자열에서 원하는 부분만 검색하는 방법
+```swift
+let str = "Hello, Swift"
+str.contains("swift") // false -> 대소문자 구분 함
+str.lowercased().contains("swift") // true
+str.range(of: "Swift") // 범위 검색 -> 대소문자 구분 함
+str.range(of: "swift", options: [.caseInsensitive]) // 범위 검색 -> 대소문자 구분 안 함
+
+let str2 = "Hello, Programming" // "Hello, Programming" 
+let str3 = str2.lowercased() // "hello, programming"
+
+var common = str.commonPrefix(with: str2) // "Hello,"
+common = str.commonPrefix(with: str3) // "" -> 대소문자 구분 함
+str.commonPrefix(with: str3, options: [.caseInsensitive]) // "Hello," -> .caseInsensitive 옵션으로 대소문자 구분 안 함
+
+str3.commonPrefix(with: str, options: [.caseInsensitive]) // "hello," -> str3이 hello로 쓰여 있으니까
+
+```
 ### 12-14. 문자열에서 문자 검색하기
+```swift
+import Foundation
+
+let str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+var count = 0
+for char in str {
+    if char == "i" {
+        count += 1
+    }
+}
+
+// 여기에서 i 문자의 수를 구한 후 count 변수에 저장해 주세요.
+
+print(count)
+```
+
+
 
 ## String and Character - 고급
 
 ### 12-15. String Options #1
+- 문자열 옵션을 통해 다양한 비교//검색 조건을 지정하는 방법
+```swift
+"A" == "a" // false
+"A".caseInsensitiveCompare("a") == .orderedSame // true
+"A".compare("a", options: [.caseInsensitive]) == .orderedSame // true
+NSString.CompareOptions.caseInsensitive
+
+let a = "\u{D55C}" // "한"이라는 글자의 유니코드
+let b = "\u{1112}\u{1161}\u{11AB}" // "ㅎ", "ㅏ", "ㄴ" 유니코드 -> "한"
+
+a == b // true
+a.compare(b) == .orderedSame // true
+a.compare(b, options: [.literal]) == .orderedSame // false
+
+let korean = "행복하세요"
+let english = "Be happy"
+
+if let range = english.range(of: "p") {
+  english.distance(from: english.startIndex, to: range.lowerBound) // 5
+}
+
+if let range = english.range(of: "p", options: [.backwards]) {
+  english.distance(from: english.startIndex, to: range.lowerBound) // 6
+}
+
+// Anchored Option: 검색 범위를 문장의 시작이나 끝부분으로 설정하고 시작
+let str = "Swift Programming"
+
+if let result = str.rrange(of: "Swift") {
+  print(str.distance(from: str.startIndex, to: result.lowerbound)) // 0 -> "Swift"의 인덱스는 0
+} else {
+  print("not found")
+}
+
+if let result = str.rrange(of: "Swift", options: [.backwards]) {
+  print(str.distance(from: str.startIndex, to: result.lowerbound)) // 0 -> "Swift"의 인덱스는 0(backwards)
+} else {
+  print("not found")
+}
+
+if let result = str.rrange(of: "Swift", options: [.anchored]) {
+  print(str.distance(from: str.startIndex, to: result.lowerbound)) // 0 -> "Swift"의 인덱스는 0(anchored)
+} else {
+  print("not found")
+}
+
+if let result = str.rrange(of: "Swift", options: [.anchored, .backwards]) { // 이렇게 옵션에 .anchored, .backwards 순서로 넣으면 trailing에서 leading 방향으로 검색한다
+  print(str.distance(from: str.startIndex, to: result.lowerbound))
+} else {
+  print("not found") // 이게 출력됨 -> anchored 옵션을 사용하면 문자열 전체를 검색하지 않는다.
+                     // 문자열 중에서 시작 부분이나 마지막 부분만 검색을 한다. backwards 옵션이 포함되어 마지막 부분만 검색해서 이런 결과가 나온다
+}
+// anchored 옵션은 단독으로 사용되는 경우가 없다. 자주 사용하지도 않는다.
+str.hasPrefix("swift") // false
+if let _ = str.range(of: "swift", options: [.anchored, caseInsensitive]) {
+  print("same prefix") // "same prefix" 
+}
+str.hasSuffix("swift") // false
+```
+
 ### 12-16. String Options #2
+- 문자열 옵션을 통해 다양한 비교/검색 조건을 지정하는 방법
+```swift
+// Numeric Option
+"A" < "B" // true
+"a" < "B" // false -> Swift는 사전 순서로 문자를 배열하지 않는다. 아스키 테이블에서는 소문자 a가 대문자 B보다 더 크다.
+
+let file9 = "file9.txt"
+let file10 = "file10.txt"
+
+file9 < file10 // false
+file9.compare(file10) == .oredredAscending // false
+
+// numeric 옵션을 사용하면 문자열에 포함된 숫자를 숫자 자체로 비교한다(numeric은 '숫자'를 의미).
+file9.compare(file10, options: [.numeric]) == .orderedAscending // true
+
+// Diacritic(발음기호) Insensitive
+let a = "Cafe"
+let b = "Cafe"(발음기호 추가됨)
+
+a == b // false
+a.compare(b) == .orderedSame // false
+a.compare(b, options: [.diacriticInsensitive]) == .orderedSame // true
+
+// Forced Ordering Option -> 강제 정렬
+let upper = "STRING"
+let lower = "string"
+
+upper == lower // false
+upper.compare(lower, options: [.caseInsensitive]) == .orderedSame // true
+upper.compare(lower, options: [.caseInsensitive, .forcedOrdering]) == .orderedSame // false -> forcedOrdering을 적용하면 caseInsensitive가 무시됨
+
+// Regular Expression(정규식 표현)
+let emailPattern = "([0-9a-zA-Z_-]+)@(0-9a-zA-Z_-]+)(\\.[0-9a-zA-Z_-]+){1,2}"
+let emailAddress = "user@example.com"
+
+if let _ = emailAddress.range(of: emailPattern) {
+  print("found")
+} else {
+  print("not found") // 이게 출력됨
+}
+
+if let _ = emailAddress.range(of: emailPattern, options: [.regularExpression]) {
+  print("found") // 이게 출력됨
+} else {
+  print("not found")
+}
+// 하지만 위 방법만으로는 사용자가 email 형식을 제대로 사용하였는지 확인할 수 없으므로 다음의 방법을 사용해야함
+
+if let range = emailAddress.range(of: emailPattern, options: [.regularExpression]), (range.lowerBound, range.upperBound) == (emailAddress.startIndex, emailAddress.endIndex) {
+  print("found") 
+} else {
+  print("not found")// 이게 출력됨
+}
+
+```
 ### 12-17. 올바른 문자열 옵션 사용하기
+```swift
+두 문자열을 동일한 문자열로 판단하도록 적절한 문자열 옵션을 채워주세요.
+import Foundation
+
+let a = "cafè"
+let b = "Cafe"
+
+let result = a.compare(b, options: 
+[.caseInsensitive, .diacriticInsensitive]
+) == 
+.orderedSame
+
+print(result)
+```
+
+
+
 ### 12-18. Character Set ***
+- 문자 집합(Character Set)을 만들고 활용하는 방법
+```swift
+let a = CharacterSet.uppercaseLetters
+let b = a.inverted
+
+// 캐릭터셋을 활용한 검색 코드
+let str = "loRem Ipsum"
+var charSet = CharacerSet.uppercaseLetters
+
+if let range = str.rangeOfcharacter(from: charSet) {
+  print(str.distance(from: str.startIndex, to: range.lowerBound)) // 2 (세번째 인덱스)
+}
+
+if let range = str.rangeOfcharacter(from: charSet, options: [.backwards]) {
+  print(str.distance(from: str.startIndex, to: range.lowerBound)) // 뒤에서 검색했을 때 첫 번째가 "I"이므로, "I"의 인덱스인 6이 출력됨 
+}
+```
+
+
 ### 12-19. 문자열에서 불필요한 문자 제거하기
 
 
