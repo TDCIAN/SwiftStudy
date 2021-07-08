@@ -2439,7 +2439,102 @@ let values = Array(words.values) // ["Banana", "City", "Apple"]
 
 
 ### 13-8. Dictionary#2
+- 새로운 요소를 추가하고 삭제하는 방법
+  - 새로운 요소 추가
+  - 개별 요소 삭제
+  - 전체 요소 삭제
+```swift
+Adding Keys and Values
+
+var words = [String: String]()
+words["A"] = "Apple"
+words["B"] = "Banana"
+
+words.count // 2
+words // ["A": "Apple", "B": "Banana"]
+
+words["B"] = "Ball"
+words // ["A": "Apple", "B": "Ball"]
+
+words.updateValue("City", forKey: "C") // nil
+words.updateValue("Circle", forKey: "C") // "City"
+
+Removing Keys and Values
+
+words // ["C": "Circle", "A": "Apple", "B": "Ball"]
+words["B"] = nil
+
+words // ["C": "Circle", "A": "Apple"]
+
+words["Z"] = nil // nil -> 존재하지 않는 키를 삭제한다고 해서 크래시가 발생하진 않는다
+
+words.removeValue(forKey: "A") // "Apple"
+words.removeValue(forKey: "A") // nil
+
+words.removeAll() // 전체 삭제
+
+```
+
+
+
 ### 13-9. Dictionary#3
+- 딕셔너리를 비교하고 검색하는 방법
+  - 딕셔너리 비교
+  - 요소 검색
+
+```swift
+Comparing Dictionaries
+
+let a = ["A": "Apple", "B": "Banana", "C": "City"]
+let b = ["A": "Apple", "C": "City", "B": "Banana"]
+
+a == b // true -> 순서는 신경쓰지 않는다
+a != b // false
+
+let a = ["A": "Apple", "B": "Banana", "C": "City"]
+let b = ["A": "Apple", "C": "City", "B": "banana"]
+
+a == b // false -> 대소문자는 신경 쓴다
+a != b // true
+
+// 대소문자 무시하고 비교하기(caseInsensitiveCompare) -> 잘못된 코드
+a.elementsEqual(b) { (lhs, rhs) -> Bool in
+  return lhs.key.caseInsensitiveCompare(rhs.key) == .orderedSame &&
+         lhs.value.caseInsensitiveCompare(rhs.value) == .orderedSame
+} // true 또는 false가 나옴 -> 같은 키를 비교하는 경우와 서로 다른 키를 비교하는 경우가 둘 다 생긴다 -> 딕셔너리는 정렬되어 있지 않으니까
+
+// 대소문자 무시하고 비교하기(caseInsensitiveCompare) -> 제대로 된 코드
+let aKeys = a.keys.sorted()
+let bKeys = b.keys.sorted()
+
+aKeys.elementsEqual(bKeys) { (lhs, rhs) -> Bool in
+  guard lhs.caseInsensitiveCompare(rhs) == .orderedSame else { return false }
+  guard let lv = a[lhs], let rv = b[rhs],
+    lv.caseInsensitiveCompare(rv) == .orederedSame else { return false }
+    return true
+} // 이렇게 하면 항상 true -> 정렬 돼 있으니까
+
+
+
+Finding Elements
+
+words = ["A": "Apple", "B": "Banana", "C": "City"]
+
+let c: ((String, String)) -> Bool = {
+  $0.0 == "B" || $0.1.contains("i") // Key에 대문자 B가 있거나, 밸류에 "i"가 있는 경우 true
+}
+
+words.contains(where: c) // true
+let r = words.first(where: c) // (key: "B", value: "Banana") 검색된 첫 번째 요소(tuple)를 return
+r?.key // "C" -> 순서 달라지니까
+r?.value // "City" -> 순서 달라지니까
+
+words.filter(c) // ["C": "City", "B": "Banana"]
+
+```
+
+
+
 ### 13-10. Set#1
 ### 13-11. Set#2
 ### 13-12. Set을 통한 집합 연산
