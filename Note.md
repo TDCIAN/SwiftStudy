@@ -2536,16 +2536,378 @@ words.filter(c) // ["C": "City", "B": "Banana"]
 
 
 ### 13-10. Set#1
-### 13-11. Set#2
-### 13-12. Set을 통한 집합 연산
-### 13-13. Iterating Collections
+- 집합 연산을 구현한 셋
+  - 셋의 특징
+  - 셋 자료형
+  - 요소의 수 확인
+  - 요소 검색
+  - 요소 추가
+  - 요소 삭제
+  - 해싱
 
+
+```swift
+let set: Set<Int> = [1, 2, 2, 3, 3, 3] // {1, 2, 3} -> 중복이 허용되지 않는다
+set.count // 3
+
+Inspecting a Set
+
+set.count // 3
+set.isEmpty // false
+
+Testing for Membership
+
+set.contains(1) // true
+
+
+Adding and Removing Elements
+
+var words = Set<String>()
+
+var insertResult = words.insert("Swift") // inserted true
+insertResult.inserted // true
+insertResult.memeberAfterInsert // "Swift"
+
+var insertResult = words.insert("Swift") // inserted false
+insertResult.inserted // false
+insertResult.memeberAfterInsert // "Swift"
+
+var updateResult = words.update(with: "Swift") // "Swift" -> 기존에 있던 내용을 update
+updateResult // "Swift"
+
+updateResult = words.update(with: "Apple") // nil -> 기존에 없던 내용을 insert
+updateResult // nil
+
+
+var value = "Swift" // "Swift"
+value.hashValue // -375957790865175...
+
+updateResult = words.update(with: value) // "Swift"
+updateResult // "Swift"
+
+value = "Hello" // "Hello"
+value.hashValue // -301532757027695...
+
+updateResult = words.update(with: value) // nil
+updateResult // nil
+
+
+struct SampleData: Hashable {
+  var hashValue: Int = 123
+  var data: String
+  
+  init(_ data: String) {
+    self.data = data
+  }
+  
+  static func == (lhs: SampleData, rhs: SampleData) -> Bool {
+    return lhs.hashValue == rhs.hashValue // 두 데이터를 비교할 때 해시값을 비교
+  }
+}
+
+var sampleSet = Set<SampleData>()
+var data = SampleData("Swift")
+data.hashValue // 123
+
+var r = sampleSet.insert(data) // inserted true, {hashValue 123, data "Swift"}
+r.inserted // true
+r.memberAfterInsert // SampleData
+sampleSet {{hashValue 123, data "Swift"}}
+
+data.data = "Hello"
+data.hashValue // 123
+
+r = sampleSet.insert(data) // inserted false, {hashValue 123, data "Hello"} -> 해시 값이 똑같이 123이기 때문에 "Hello"는 추가되지 못했음
+r.inserted // false
+r.memberAfterInsert
+sampleSet // {{hashValue 123, data "Swift"}}
+
+sampleSet.update(with: data)
+sampleSet // {{hashValue 123, data "Hello"}} -> "Hello"가 새롭게 추가(insert)되진 않았지만, 기존의 "Swift"를 대체했다(update)
+
+words.remove("Swift") // "Swift"
+words // {"Apple", "Hello"}
+
+words.remove("Ghost"} // nil -> 없는 존재를 삭제하면 nil을 리턴
+
+words.removeAll()
+
+```
+
+
+
+### 13-11. Set#2
+- 셋에서 집합 비교와 집합 연산을 구현
+  - 셋 비교
+  - 합집합
+  - 교집합
+  - 여집합
+  - 차집합
+
+```swift
+Comparing Sets
+
+var a: Set = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+var b: Set = [1, 3, 5, 7, 9]
+var c: Set = [2, 4, 6, 8, 10]
+var d: Set = [1, 7, 5, 9, 3]
+
+a == b // false
+a != b // true
+
+b == d // true -> 원소의 순서는 고려하지 않는다
+
+b.elementsEqual(d) // false -> elementsEqual은 두 Set에 들어있는 원소를 순서대로 배열하기 때문
+// 두 Set의 원소를 제대로 비교하고 싶다면, 우선 Set을 배열로 바꾸고 그 후에 비교해야 한다
+
+a.isSubset(of: a) // 부분집합 여부 -> true
+a.isStrictSubset(of: a) // 진부분집합 여부 -> false -> a의 원소는 모두 a에 속하지만 a == a이니까(진부분집합)
+
+b.isSubset(of: a) // 부분집합 여부 -> true
+b.isStrictSubset(of: a) // 진부분집합 여부 -> true -> b의 원소는 모두 a에 속하지만 b != a이니까(진부분집합)
+
+
+// 상위집합여부 확인
+a.isSuperset(of: a) // true
+a.isStrictSuperset(of: a) // false
+
+a.isSuperset(of: b) // true
+a.isStrictSuperset(of: b) // true
+
+a.isSuperset(of: c) // false
+a.isStrictSuperset(of: c) // false
+
+// 교집합여부 확인
+a.isDisjoint(with: b) // false
+a.isDisjoint(with: c) // false
+b.isDisjoint(with: c) // true -> b는 홀수이고, c는 짝수이기 때문에 서로소집합이 성립된다
+
+
+Combining Sets
+
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+b = [1, 3, 5, 7, 9]
+c = [2, 4, 6, 8, 10]
+
+// 합집합 만들기
+var result = b.union(c) // {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+result = b.union(a) // {1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+// 원본 직접 변경
+b.formUnion(c) // {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+b = [1, 3, 5, 7, 9]
+c = [2, 4, 6, 8, 10]
+
+// 교집합
+result = a.intersection(b) // {1, 3, 5, 7, 9}
+result = c.intersection(b) // Set([])
+
+a.formIntersection(b) // {1, 3, 5, 7, 9}
+a // {1, 3, 5, 7, 9}
+
+b.formIntersection(c) // Set([]) -> b는 빈 set이 되어버린다
+
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+b = [1, 3, 5, 7, 9]
+c = [2, 4, 6, 8, 10]
+
+// 여집합
+result = a.symmetricDifference(b) // {2, 4, 6, 8}
+result = c.symmetricDifference(b) // {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+a.formSymmetricDifference(b) // {2, 4, 6, 8}
+
+
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+b = [1, 3, 5, 7, 9]
+c = [2, 4, 6, 8, 10]
+
+// 차집합
+result = a.subtracting(b) // {2, 4, 6, 8}
+a.subtract(b) // {2, 4, 6, 8} -> b에 저장돼 있는 모든 홀수를 제거시킴
+
+```
+
+
+### 13-12. Set을 통한 집합 연산
+```swift
+import Foundation
+
+var a: Set = [16, 8, 3, 13, 4, 2, 7, 14, 4, 17, 6, 7, 4, 26, 3, 19, 2, 15, 19, 25]
+var b: Set = [11, 9, 20, 22, 30, 6, 14, 20, 20, 19, 7, 12, 2, 12, 19, 4, 13, 11, 24, 20]
+
+// 여기에 합집합을 저장해 주세요.
+let unionSet = a.union(b)
+
+// 여기에 교집합을 저장해 주세요.
+let intersectionSet = a.intersection(b)
+
+// 여기에 차집합을 저장해 주세요.
+let subtractingSet = a.subtracting(b)
+
+print(unionSet.count, intersectionSet.count, subtractingSet.count)
+```
+
+
+### 13-13. Iterating Collections
+- 컬렉션에 포함된 모든 요소를 대상으로 원하는 작업을 실행하는 방법
+```swift
+Iterating Collections
+
+(1) for-in
+for element in collection {
+  statements
+}
+
+(1-1) Array 열거
+let arr = [1, 2, 3]
+for num in arr {
+  print(num)
+}
+/* 
+1
+2
+3
+*/
+
+
+(1-2) Set 열거
+let set: Set = [1, 2, 3]
+for num in set {
+  print(num)
+}
+/*
+2
+3
+1
+*/ -> Set은 정렬되지 않은 상태임을 잊지 마라
+
+
+(1-3) Dictionary 열거
+let dict = ["A": 1, "B": 2, "C": 3]
+for (key, value) in dict {
+  print(key, value)
+}
+/* 
+C 3
+A 1
+B 2
+*/
+
+
+(2) forEach
+
+(2-1) Array
+let arr = [1, 2, 3]
+arr.forEach { (num) in
+  print(num)
+}
+/* 
+1
+2
+3
+*/
+
+(2-2) Set
+let set: Set = [1, 2, 3]
+set.forEach { (num) in
+  print(num)
+}
+/* 
+3
+1
+2
+*/
+
+(2-3) Dictionary
+let dict = ["A": 1, "B": 2, "C": 3]
+dict.forEach { (elem) in
+  print(elem.key, elem.value)
+}
+/* 
+A 1
+B 2
+C 3
+*/
+
+// for는 반복문이기 때문에 break나 continue를 사용할 수 있다
+func withForIn() {
+  print(#function)
+  let arr = [1, 2, 3]
+  for num in arr {
+    print(num)
+    return
+  }
+}
+
+// forEach는 반복문이 아니기 때문에 break나 continue를 사용할 수 없다
+func withForEach() {
+  print(#function)
+  let arr = [1, 2, 3]
+  arr.ForEach { (num) in
+    print(num)
+    return
+  }
+}
+
+withForIn()
+/* 
+withForIn()
+1
+*/ -> for문에서는 바로 return이 실행됨 -> 반복 횟수에 영향을 줌
+withForEach()
+/* 
+1
+2
+3
+*/ -> forEach문에서는 return이 실행되는 시점이 함수 종료 시점 -> 반복 횟수에 영향을 주지 않음
+```
 
 
 ## Enumeration
 - 동일한 이름에 속한 상수 그룹을 선언하고 다양하게 매칭시키는 방법
 
 ### 14-1. Enumeration Types
+- 제한된 경우의 수를 표현하는 자료형
+  - 열거형 선언 문법
+  - 열거형 사용 이유 -> 코드의 가독성과 안정성(오타 가능성 감소)이 높아진다
+
+```swift
+enum TypeName {
+  case caseName
+  case caseName, caseName
+}
+
+enum Alignment {
+  case left
+  case right
+  case center
+}
+
+Alignment.center // center
+
+var textAlignment = Alignment.center
+textAlignment = .left // 열거형 이름은 생략해도 되지만, 점(.)은 생략하면 안 된다
+
+if textAlignment == .center {
+
+}
+
+switch textAlignment {
+case .left:
+  print("left")
+case .right:
+  print("right")
+case .center:
+  print("center")
+}
+// left
+```
+
+
+
 ### 14-2. Raw Values
 ### 14-3. 열거형으로 Http Status Code 처리하기
 
