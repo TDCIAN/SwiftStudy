@@ -2374,6 +2374,70 @@ print(filtered == ["iPhone 8", "iPhone 8 Plus", "iPhone Xr", "iPhone Xs", "iPhon
 
 
 ### 13-7. Dictionary#1
+- 딕셔너리의 특징 및 기초적인 사용법
+  - 딕셔너리의 특징
+  - 딕셔너리 리터럴
+  - 딕셔너리 자료형
+  - 딕셔너리 생성
+  - 요소의 수 확인
+  - 서브스크립트 문법
+
+```swift
+Creating a Dictionary
+let words = ["A": "Apple", "B": "Banana", "C": "City"]
+let emptyDict: [String: String] = [:]
+let emptyDict2 = [String: String]()
+let emptyDict3 = Dictionary<String, String>()
+
+Inspecting a Dictionary
+words.count // 3
+words.isEmpty // false
+
+
+Accessing Keys and Values
+
+words["A"] // "Apple"
+words["Apple"] // nil
+
+let a = words["E"] // nil -> 해당 키에 맞는 밸류가 없으니까 nil
+let b = words["E", default: "Empty"] // "Empty"
+
+for k in words.keys {
+  print(k)
+}
+/* 
+B
+A
+C
+*/
+
+for v in words.values {
+  print(v)
+}
+/* 
+Banana
+Apple
+City
+*/
+
+// 정렬해서 출력하기
+for k in words.keys.sorted() {
+  print(k)
+}
+/* 
+A
+B
+C
+*/
+
+
+// Dictionary를 배열로 바꾸기
+let keys = Array(words.keys) // ["B", "C", "A"]
+let values = Array(words.values) // ["Banana", "City", "Apple"]
+```
+
+
+
 ### 13-8. Dictionary#2
 ### 13-9. Dictionary#3
 ### 13-10. Set#1
