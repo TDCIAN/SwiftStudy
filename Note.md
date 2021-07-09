@@ -2908,13 +2908,187 @@ case .center:
 
 
 
-### 14-2. Raw Values
+### 14-2. Raw Values(원시값)
+- case에 값을 저장하고 읽는 방법
+- 원시값이 필수는 아니다
+
+```swift
+Raw Values
+enum TypeName: RawValueType {
+  case caseName = Value
+}
+
+enum Alignment: Int {
+  case left
+  case right = 100
+  case center
+}
+
+Alignment.left.rawValue // 0
+Alignment.right.rawValue // 100
+Alignment.center.rawValue // 101
+
+Alignment.left.rawValue = 10 // Cannot assign to property: 'rawValue' is immutable 에러 발생
+
+Alignment(rawValue: 0) // left
+Alignment(rawValue: 200) // nil
+
+enum Weekday: String {
+  case sunday
+  case monday = "MON"
+  case tuesday
+  case wednesday
+  case thursday
+  case friday
+  case saturday
+}
+
+Weekday.sunday.rawValue // "sunday"
+Weekday.monday.rawValue // "MON"
+
+
+```
+
+
 ### 14-3. 열거형으로 Http Status Code 처리하기
+```swift
+import Foundation
+
+// 여기에서 열거형을 선언해 주세요.
+enum HttpStatusCode: String {
+    case ok = "OK"
+    case badReqeust = "Bad Request"
+    case unauthorized = "Unauthorized"
+    case notFound = "Not Found"
+    case internalSeverError = "Internal Server Error"
+    case badGateway = "Bad Gateway"
+}
+
+func solution(_ statusCode:Int) -> String {
+   // 여기에서 인스턴스를 생성하고 메시지를 리턴해 주세요.
+    switch statusCode {
+        case 200:
+            return HttpStatusCode.ok.rawValue
+        case 400:
+            return HttpStatusCode.badReqeust.rawValue
+        case 401:
+            return HttpStatusCode.unauthorized.rawValue
+        case 404:
+            return HttpStatusCode.notFound.rawValue
+        case 500:
+            return HttpStatusCode.internalSeverError.rawValue
+        case 502:
+            return HttpStatusCode.badGateway.rawValue
+        default:
+            return "Unknown Error"
+    }
+}
+```
 
 ## Enumeration - 고급
 
 ### 14-4. Associated Values ***
+- case에 연관 값을 저장하는 방법
+```swift
+enum TypeName {
+  case caseName(Type)
+  case caseName(Type, Type, ...)
+}
+
+enum VideoInterface {
+  case dvi(width: Int, height: Int)
+  case hdmi(Int, Int, Double, Bool)
+  case displayPort(CGSize)
+}
+
+var input = VideoInterface.dvi(width: 2048, height: 1536)
+
+switch input {
+case .dvi(2048, 1536):
+  print("dvi 2048 * 1536")
+case .dvi(2048, _):
+  print("dvi 2047 * Any)
+case .dvi:
+  print("dvi")
+case .hdmi(let width, let height, let version, let audioEnabled):
+  print("hdmi \(width) * \(height))
+case let .displayPort(size):
+  print("dp")
+}
+
+input = .hdmi(3840, 2160, 2.1, true)
+```
+
+
 ### 14-5. Enumeration Case Pattern ***
+- 조건문과 반복문에서 연관 값을 매칭시키는 방법
+```swift
+Enumeration Case
+Pattern
+
+case Enum.case(let name):
+case Enum.case(var name):
+
+case let Enum.case(name):
+case var Enum.case(name):
+
+enum Transporation {
+  case bus(number: Int)
+  case taxi(company: String, number: String)
+  case subway(lineNumber: Int, express: Bool)
+}
+
+var tpt = Transportation.bus(number: 7) // bus(number: 7)
+
+switch tpt {
+case .bus(let n):
+  print(n)
+case .taxi(let c, var n):
+  print(c, n)
+case let .subway(l, e):
+  print(l, e)
+}
+
+tpt = Transportation.subway(lineNumber: 2, express: false)
+
+// 2호선(line)인지 먼저 확인하고, 그 다음 급행 여부(express) 확인
+if case let .subway(2, express) = tpt {
+  if express {
+  
+  } else {
+  
+  }
+}
+
+if case .subway(_, true) = tpt {
+  print("express")
+}
+
+let list = [
+  Transportation.subway(lineNumber: 2, express: false),
+  Transportation.bus(number: 4412),
+  Transportation.subway(lineNumber: 7, express: true),
+  Transportation.taxi(company: "SeoulTaxi", number: "1234")
+]
+
+for case let .subway(n, _) in list {
+  print("subway \(n)")
+}
+/* 
+subway 2
+subway 7
+*/
+
+for case let .subway(n, true) in list {
+  print("subway \(n)")
+}
+// subway 7
+
+for case let .subway(n, true) in list where n == 2 {
+  print("subway \(n)")
+}
+// 아무것도 출력되지 않음 -> 2호선이면서 급행인 건 없으니까
+```
 
 
 
