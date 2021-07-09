@@ -1730,7 +1730,21 @@ if thirdCharIndex < str.endIndex && thirdCharIndex >= str.startIndex {
 
 
 ### 12-6. 문자열에서 원하는 범위 추출하기
+```swift
+import Foundation
 
+let str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+// range(of:)를 활용해서 시작 인덱스를 구해주세요.
+let startIndex = str.range(of: "nisi ut aliquip")?.lowerBound ?? str.startIndex
+
+// index(_:offsetBy:)를 활용해서 종료 인덱스를 구해주세요.
+let endIndex = str.index(startIndex, offsetBy: 14)
+
+// 서브스크립트 문법으로 범위를 추출해 주세요.
+let result = str[startIndex...endIndex]
+print(result == "nisi ut aliquip")
+```
 
 ### 12-7. String Basics
 - 문자열 조작에 필요한 기초 테크닉
@@ -3096,16 +3110,271 @@ for case let .subway(n, true) in list where n == 2 {
 - 새로운 형식을 직접 구현하는 방법
 
 ### 15-1. Structures and Classes
+- 구조체와 클래스에 대한 기초적인 내용과 구현 문법
+  - 프로그래밍 패러다임
+    - Object-Oriented Programming
+      - 애플이 제공하는 프레임워크는 객체지향으로 구성되어 있다
+      - 따라서 보통 iOS 개발을 시작할 때 객체지향으로 개발하게 되는 경우가 많다
+      - 객체지향에 대한 이해를 기초로 깔고 그 위에 다른 패러다임을 얹는 게 좋다
+    - Protocol-Oriented Programming
+    - Functional Programming
+
+  - 객체와 추상화
+  - 클래스 선언 문법
+  - 구조체 선언 문법
+  - 인스턴스 생성
+  - 클래스와 구조체 비교
+
+- 이름만으로 호출할 수 있으면 함수이고, 인스턴스를 통해서 호출할 수 있으면 메소드이다.
+- 구조체는 메모리 공간으로 스택을 사용하고, 스택에 값을 저장한다. 그리고 값을 전달할 때마다 복사본을 생성한다. -> 값 형식(열거형)
+- 클래스는 메모리 공간으로 힙을 사용하고, 힙에 값을 저장한다. 스택에는 힙에 저장되어 있는 값의 주소를 저장한다. 값을 전달하면 복사본은 생성하지 않고, 주소만 전달한다. -> 참조 형식(클래스, 클로저)
+- 소멸자(deinitializer)와 상속(Inheritance)은 클래스에서만 지원한다.
+- 메모리 관리 방식에도 차이가 있다
+  - 값 형식에서는 인스턴스가 속한 스코프가 종료되면 메모리에서 자동으로 제거된다
+  - 참조 형식에서는 스코프에 관계 없이 레퍼러스 카운팅을 통해 메모리를 관리한다
+
+
+
 ### 15-2. Initializer Syntax
+- 가장 기본적인 형태의 생성자를 구현하고 호출하는 방법
+  - 생성자 구현
+  - 생성자 호출
+
+```swift
+Initializer Syntax
+init(parameters) {
+  statements
+}
+*** 중요 ***
+- 생성자는 속성 초기화가 가장 중요하고 유일한 목적이다
+- 생성자 실행이 종료되는 시점에는 모든 속성의 초기값이 저장되어 있어야 한다
+
+class Position {
+  var x: Double
+  var y: Double
+  
+  init() {
+    x = 0.0
+    y = 0.0
+  }
+  
+  init(value: Double) {
+    x = value
+    y = value
+  }
+}
+
+let a = Position() // 인스턴스가 생성됨
+a.x // 0
+a.y // 0
+
+let b = Position(vlaue: 100)
+b.x // 100
+b.y // 100
+
+```
+
+
 ### 15-3. 구조체를 선언하고 인스턴스 생성하기
+```swift
+
+파라미터로 r, g, b 세 값이 전달됩니다.
+컬러를 저장하는 새로운 구조체를 선언하고 전달된 값으로 인스턴스를 생성해 주세요.
+생성된 인스턴스 속성으로 아래와 같은 문자열을 구성해서 리턴해 주세요.
+
+R:95 G:199 B:205
+
+import Foundation
+
+// 여기에서 새로운 Color 구조체를 선언해 주세요.
+struct Color {
+    var r:Int
+    var g:Int
+    var b:Int
+    
+    var rgb: String
+
+    init(r: String, g: String, b: String) {
+        self.r = Int(r) ?? 0
+        self.g = Int(g) ?? 0
+        self.b = Int(b) ?? 0
+        
+        self.rgb = "R:\(self.r) G:\(self.g) B:\(self.b)"
+    }
+}
+
+func solution(_ r:Int, _ g:Int, _ b:Int) -> String {
+    // 여기에서 새로운 인스턴스를 생성해 주세요.
+    let color = Color(r: String(r), g: String(g), b: String(b))
+    // 여기에서 문자열을 리턴해 주세요.
+    return color.rgb
+}
+```
+
+
+
 ### 15-4. 클래스를 선언하고 인스턴스 생성하기
+```swift
+
+파라미터로 r, g, b 세 값이 전달됩니다.
+컬러를 저장하는 새로운 클래스를 선언하고 전달된 값으로 인스턴스를 생성해 주세요.
+생성된 인스턴스 속성으로 아래와 같은 문자열을 구성해서 리턴해 주세요.
+
+R:95 G:199 B:205
+import Foundation
+
+// 여기에서 새로운 Color 클래스를 선언해 주세요.
+class Color {
+    var r: Int
+    var g: Int
+    var b: Int
+    
+    var rgb: String
+    
+    init(r: Int, g: Int, b: Int) {
+        self.r = r
+        self.g = g
+        self.b = b
+        
+        self.rgb = "R:\(self.r) G:\(self.g) B:\(self.b)"
+    }
+}
+
+
+func solution(_ r:Int, _ g:Int, _ b:Int) -> String {
+    // 여기에서 새로운 인스턴스를 생성해 주세요.
+    let color = Color(r: r, g: g, b: b)
+   
+    // 여기에서 문자열을 리턴해 주세요.
+    return color.rgb
+}
+```
+
+
+
 ### 15-5. Value Types vs Reference Types
+- 값 형식과 참조 형식의 차이점
+  - 값 형식의 메모리 처리 방식
+  - 참조 형식의 메모리 처리 방식
+  - 일반적인 구현 지침
+
+- Value Types and Reference Types
+  - Value Type
+    - Structure(Int나 String, Swift Collection 등등 포함)
+    - Enumeration
+    - Tuple
+  - Reference Type
+    - Class
+    - Closure
+
+```swift
+struct PositionValue {
+  var x = 0.0
+  var y = 0.0
+}
+
+class PositionObject {
+  var x = 0.0
+  var y = 0.0
+}
+
+// 선언과 동시에 기본값을 저장하면 파라미터가 없는 생성자가 자동으로 제공되는데, 이를 기본 생성자(Default Initializer)라고 한다
+var v = PositionValue() // x0 y0
+var o = PositionObject() // x0 y0
+
+var v2 = v // x0 y0
+var o2 = o // x0 y0
+
+v2.x = 12
+v2.y = 34
+
+v // x0 y0 -> 복사본이기 때문에 v에는 변화가 없다
+v2 // x12 y34
+
+o2.x = 12
+o2.y = 34
+
+o // x12 y34 -> 클래스는 새로운 복사본을 생성하지 않고, 참조를 전달(인스턴스가 저장되어 있는 메모리 주소)하기 때문에(원본을 전달) 어떤 변수를 통해 속성을 바꾸더라도 항상 같은 속성을 변경하게 된다
+o2 // x12 y34
+```
+
+- 값 형식과 참조 형식 중 어떤 것을 선택할지는 본인 선택이지만, 객체 지향 프로그래밍에서는 대부분 참조 형식인 클래스로 구현한다.
+- 상대적으로 적은 데이터를 필요로 하고 상속이 필요 없다면 값 형식을 생성한다
+- 값이 전달되는 시점마다 복사본이 생성되어야 하는 경우에도 값 형식을 사용한다
+- 연관된 상수 그룹을 표현할 때는 열거형으로 구현하고, 코드 내에서 한 번만 사용되는 형식은 튜플로 구현한다.
+- 나머지 값형식은 모두 구조체로 구현한다
+- 함수형 프로그래밍과 프로토콜 지향 프로그래밍에서는 주로 구조체로 구현한다
+- 상속을 구현하거나, 참조를 전달해야 하는 경우에만 클래스로 구현한다
+
+
 
 
 ## Structure and Class - 고급
 
 ### 15-6. Identity Operator ***
-### 15-7. Nested Types
+- 항등 연산자를 통해 참조를 비교하는 방법
+  - 동일성 비교
+  - Identical To Operator
+  - Not Identical To Operator
+  - Identical과 Equal의 차이
+
+- 값 형식과 참조 형식은 동일성을 비교하는 데 차이가 있다
+  - 값 형식
+    - 값 형식이 저장되는 메모리 공간은 스택이다
+    - 하나의 공간에 저장되기 때문에, 값을 비교를 위해서는 비교연산자 하나로 충분하다
+
+
+  - 참조 형식
+    - 참조형식은 값을 힙에 저장하고, 메모리 주소를 스택에 저장한다
+    - 두 개의 공간에 저장되기 때문에, 비교하는 방법도 두 가지가 필요하다
+    - 값을 비교할 때는 비교 연산자를 사용하고, 메모리 주소를 비교할 때는 항등 연산자를 사용한다
+
+```swift
+Identity Operator
+
+class A {
+
+}
+
+let a = A()
+let b = a
+let c = A()
+
+a === b // true -> 동일한 주소
+a !== b // false
+
+a !== c // true -> 서로 다른 주소
+
+같은 메모리 주소를 갖고 있으면 Identical 하다고 하고, 
+같은 값을 갖고 있으면 Equal 하다고 한다.
+```
+
+
+### 15-7. Nested Types(포함된 형식, 내포된 형식 -> 형식 내부에 선언된 형식)
+- 하나의 형식 내부에 다른 형식을 선언하고 새로운 인스턴스를 생성하는 방법
+  - Nested Type 선언 문법
+  - Nested Type 표기법
+
+```swift
+class One {
+  struct Two {
+    enum Three {
+      case a
+      
+      class Four {
+      
+      }
+    }
+  }
+  
+  var a = Two()
+}
+
+// let two: Two = Two() // Use of undeclared type 'Two' 에러 발생
+let two: One.Two = One.Two() // Use of undeclared type 'Two' 에러 발생
+```
+- Nested Type의 가장 큰 장점은 가독성이다
+
 
 
 
@@ -3113,14 +3382,389 @@ for case let .subway(n, true) in list where n == 2 {
 - 형식 내부에 값을 저장하고 처리하는 방법
 
 ### 16-1. Stored Property
-### 16-2. 새로운 저장 속성 추가하기
-### 16-3. Computed Property
-### 16-4. 새로운 계산 속성 추가하기
-### 16-5. Property Observer
-### 16-6. Type Property 
-### 16-7. 새로운 형식 속성 선언하기
-### 16-8. self & super
+- 저장 속성과 지연 저장 속성
+  - 변수 저장 속성
+  - 상수 저장 속성
+  - 지연 저장 속성
+  - 구조체의 가변성과 속성의 관계
+  - 지연 저장 속성
+  - 속성 초기화 패턴
 
+- 저장속성은 클래스와 구조체에서 선언할 수 있다
+- 저장속성은 인스턴스에 속한 속성이다
+- 그래서 인스턴스가 새로 생성될 때마다 새로운 메모리 공간이 생성된다
+- 속성에 저장되는 값은 인스턴스마다 달라진다
+
+```swift
+Explicit Member Expression(명시적 멤버 표현식) -> Dot Syntax(점 문법)
+class Person {
+  let name = "John Doe"
+  var age = 33
+}
+let p = Person()
+p.name // "John Doe"
+p.age // 33
+
+p.age = 30
+p.name = "New Name" // Cannot assign to property: 'name' is a 'let' constant 에러 발생
+
+struct Person {
+  let name = "John Doe"
+  var age = 33
+}
+
+let p = Person()
+p.age = 30 // Cannot assign to property: 'p' is a 'let' constant 문제 발생 -> 구조체 인스턴스 p가 let 타입으로 선언되어 있으니까
+
+var p = Person()
+p.age = 30 // 문제 없음
+
+
+
+Lazy Stored Property(지연 저장 속성)
+
+- 저장 속성이 초기화 되는 시점: 인스턴스 초기화 시점과 동일
+- 지연 저장 속성은 초기화를 지연시킨다 -> 인스턴스가 초기화 되는 시점이 아니라, 속성에 처음 접근하는 시점에 초기화 된다
+- 항상 변수 저장 속성(lazy var)으로 선언한다
+- 생성자에서 초기화하지 않기 때문에, 선언 시점에 기본값을 저장해야 한다
+
+struct Image {
+  init() {
+    print("new image")
+  }
+}
+
+struct BlogPost {
+  let title: String = "Title"
+  let content: String = "Content"
+  let attachment: Image = Image()
+}
+
+let post = BlogPost() // 이 때 바로 "new Image"가 출력됨
+
+struct BlogPost {
+  let title: String = "Title"
+  let content: String = "Content"
+  lazy var attachment: Image = Image()
+  
+  let date: Date = Date()
+  
+  lazy var formattedDate: String = {
+    let f = DateFormatter()
+    f.dateStyle = .long
+    f.timeStyle = .medium
+    return f.string(from: date)
+  }() // 괄호를 붙여주면 클로저가 초기화 시점에 호출된다
+}
+
+var post = BlogPost()
+post.attachment // 이 때가 돼야 "new Image"가 출력됨
+```
+
+
+### 16-2. 새로운 저장 속성 추가하기
+```swift
+import Foundation
+
+class Color {
+   let red: Int
+   let green: Int
+   let blue: Int
+   
+var alpha: Double = 1.0
+
+
+   init(red: Int, green: Int, blue: Int) {
+      self.red = red
+      self.green = green
+      self.blue = blue
+   }
+}
+
+let c = Color(red: 255, green: 0, blue: 0)
+if c.alpha == 1.0 {
+   c.alpha = 0.5
+}
+
+print("OK")
+
+```
+
+### 16-3. Computed Property(계산된 속성, 계산 속성)
+- 다른 속성을 기반으로 동작하는 계산 속성
+  - get 블록과 set 블록
+  - 읽기 전용 계산 속성
+
+- Computed의 의미는 '다른 속성을 기반으로 속성값이 결정된다'는 의미
+- 계산 속성은 메모리 공간을 가지지 않는다.
+- 다만 다른 속성의 값을 읽어 계산해서 리턴하거나 저장한다
+- 속성에 접근할 때마다 다른 값이 리턴할 수 있으므로, 항상 let이 아닌 var로 선언해야 한다
+- 계산 속성은 클래스 뿐만 아니라, 열거형에도 추가할 수 있다.
+
+```swift
+Computed Properties
+
+var name: Type {
+
+  // get block, getter
+  get {
+    statements
+    return expr
+  }
+  
+  // set block, setter
+  set(name) {
+    statements
+  }
+}
+
+class Person {
+  var name: String
+  var yearOfBirth: Int
+  
+  init(name: String, yaer: Int) {
+    self.name = name 
+    self.yearOfBirth = year
+  }
+  
+  var age: Int {
+    get {
+      let calendar = Calendar.current
+      let now = Date()
+      let year = calendar.component(.year, from: now)
+      return year - yearOfBirth
+    }
+    
+    set {
+      let calendar = Calendar.current
+      let now = Date()
+      let year = calendar.component(.year, from: now)
+      yearOfBirth = year - newValue
+    }
+  }
+}
+
+let p = Person(name: "John Doe", year: 2002)
+p.age
+p.age = 50 // set block 실행
+p.yearOfBirth // 1969
+
+Read-only Computed Properties(읽기 전용 계산 속성)
+
+var name: Type {
+  get {
+    statements
+    return expr
+  }
+}
+
+var name: Type {
+  statements
+  return expr
+}
+```
+- 읽기 전용 계산 속성은 있지만 쓰기 전용 계산 속성은 없다
+
+
+
+
+### 16-4. 새로운 계산 속성 추가하기
+```swift
+문제 설명
+코드가 정상적으로 동작하도록 계산 속성을 추가해 주세요.
+계산 속성에서는 현재 색상의 보색을 리턴해 주세요.
+
+참고
+보색 계산 공식 255 - currentValue
+
+import Foundation
+
+class Color {
+   let red: Int
+   let green: Int
+   let blue: Int
+   
+   init(red: Int, green: Int, blue: Int) {
+      self.red = red
+      self.green = green
+      self.blue = blue
+   }
+   
+   // 여기에 계산 속성을 추가해 주세요.
+    var complementary: Color {
+        get {
+            return Color(red: (255 - self.red), green: (255 - self.green), blue: (255 - self.blue))
+        }
+    }
+}
+
+let color = Color(red: 95, green: 199, blue: 205)
+let complementaryColor = color.complementary
+
+print(complementaryColor.red, complementaryColor.green, complementaryColor.blue)
+```
+
+
+
+### 16-5. Property Observer(속성 감시자)
+- 속성 감시자를 통해 속성 값이 변경될 때 실행할 코드를 구현하는 방법
+  - willSet 블록과 didSet 블록
+  - 문법적 제약
+
+```swift
+var name: Type = DefaultValue {
+  willSet(name) {
+    statements
+  }
+  didSet(name) {
+    statements
+  }
+}
+
+class Size {
+  var width = 0.0 {
+    willSet {
+      print(width, "=>", newValue)
+    }
+    didSet {
+      print(oldValue, "=>", width)
+    }
+  }
+}
+
+let s = Size()
+s.width = 123
+/* 
+0.0 => 123.0
+0.0 => 123.0
+*/
+```
+
+
+
+
+### 16-6. Type Property(형식 속성)
+- 형식과 관련된 메소드를 선언하고 접근하는 방법
+  - 저장 형식 속성
+  - 계산 형식 속성
+  - 속성 초기화 시점
+
+```swift
+class Math {
+  static let pi = 3.14
+}
+
+let m = Math()
+// m.pi -> 이렇게 쓰면 안 됨
+Math.pi // 3.14 -> 형식 속성은 이런 식으로 호출해야 함
+
+enum Weekday: Int {
+  case sunday = 1, monday, tuesday, wednesday, thursday, friday, saturday
+  
+  static var today: Weekday {
+    let cal = Calendar.current
+    let today = Date()
+    let weekday = cal.component(.weekday, from: today)
+    
+    return Weekday(rawValue: weekday)!
+  }
+}
+
+Weekday.today // friday
+
+```
+
+
+### 16-7. 새로운 형식 속성 선언하기
+```swift
+import Foundation
+
+class Color {
+   let red: Int
+   let green: Int
+   let blue: Int
+   
+   init(red: Int, green: Int, blue: Int) {
+      self.red = red
+      self.green = green
+      self.blue = blue
+   }
+   
+   // 여기에서 형식 속성을 추가해 주세요.
+    static var white: Color {
+        Color(red: 255, green: 255, blue: 255)
+    }
+    
+    static var black: Color {
+        Color(red: 0, green: 0, blue: 0)
+    }
+}
+
+
+let white = Color.white
+let black = Color.black
+
+print(white.red == 255 && white.green == 255 && white.blue == 255 && black.red == 0 && black.green == 0 && black.blue == 0)
+```
+
+
+
+### 16-8. self & super
+- 자동으로 제공되는 특별한 속성인 self와 super
+  - self expression
+  - super expression
+
+- self는 인스턴스에 자동으로 추가된다
+
+```swift
+class Size {
+  var width = 0.0
+  var height = 0.0
+  
+  func calcArea() -> Double {
+    // return self.width * self.height
+    return width * height
+  }
+  
+  var area: Double {
+    // return self.calcArea()
+    return calcArea()
+  }
+  
+  func update(width: Double, height: Double) {
+    // 이 경우에는 속성과 파라미터를 구분하기 위해 반드시 self를 붙여줘야 한다
+    self.width = width
+    self.height = height
+  }
+  
+  func doSomething() {
+    // let c = { width * height } -> 이렇게 하면 안 된다.
+    let c = { self.width * self.height }
+  }
+  
+  static let unit = ""
+  
+  // 형식 메소드
+  static func doSomething() {
+    // self.width // 형식 메소드에서 인스턴스에 직접 접근하는 것은 불가능
+    self.unit // unit의 경우에는 역시 타입 멤버(static)이므로 사용 가능함
+    unit // 앞에 self 안 붙이고도 사용 가능
+  }
+}
+
+struct Size {
+  var width = 0.0
+  var height = 0.0
+  
+  mutating func reset(value: Double) {
+    // width = value
+    // height = value
+    self = Size(width: value, height: value)
+  }
+}
+```
+
+- super 속성은 상속과 관련 있기 때문에, 클래스에서만 사용된다
 
 
 ## Method and Subscript
