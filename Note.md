@@ -3771,11 +3771,334 @@ struct Size {
 - 형식과 연관된 코드 블록을 구현하는 방법과 서브스크립트 문법과 함께 사용할 수 있도록 구현하는 방법
 
 ### 17-1. Instance Method
+- 인스턴스와 연관된 메소드를 구현하고 호출하는 방법
+  - 인스턴스 메소드 선언 문법
+  - 인스턴스 메소드 호출 문법
+  - 값 형식의 인스턴스 메소드 구현 방식
+
+- 메소드는 특정 형식에 속하는 함수를 의미함
+
+```swift
+Instance Method
+
+func name(parameters) -> ReturnType {
+  code
+}
+
+instance.method(parameters)
+
+class Sample {
+  var data = 0
+  static var sharedData = 123
+  
+  func doSomething() {
+    print(data)
+    Sample.sharedData // static으로 선언된 Type Member이므로
+  }
+  
+  func call() {
+    doSomething()
+  }
+}
+
+let a = Sample()
+a.data
+a.doSomething()
+a.call()
+
+class Size {
+  var width = 0.0
+  var height = 0.0
+  
+  func enlarge() {
+    width += 1.0
+    height += 1.0
+  }
+}
+
+let s = Size()
+s.enlarge()
+
+
+struct Size {
+  var width = 0.0
+  var height = 0.0
+  
+  mutating func enlarge() {
+    width += 1.0
+    height += 1.0
+  }
+}
+
+var s = Size() // 인스턴스를 let으로 선언되면 안 된다 -> 값 복사니까
+s.enlarge()
+```
+
+
 ### 17-2. 새로운 인스턴스 메소드 추가하기
+```swift
+문제 설명
+코드가 정상적으로 실행되도록 인스턴스 메소드를 추가해 주세요.
+일부 초기 코드는 수정이 필요할 수 있습니다.
+
+제한
+extend(by:) 메소드는 width, height 속성에 파라미터로 전달된 값을 곱한 새로운 인스턴스를 리턴해야 합니다.
+reset() 메소드는 모든 속성을 0으로 초기화 해야 합니다.
+
+import Foundation
+
+struct Area {
+   var x: Int
+   var y: Int
+   var width: Int
+   var height: Int
+   
+   // 여기에서 인스턴스 메소드를 추가해 주세요.
+    mutating func extend(by: Int) -> Area {
+        return Area(x: 0, y: 0, width: self.width * by, height: self.height * by)
+    }
+    
+    mutating func reset() {
+        self.x = 0
+        self.y = 0
+        self.width = 0
+        self.height = 0
+    }
+}
+
+// 아래 코드는 let 또는 var 키워드만 수정할 수 있습니다.
+var a = Area(x: 0, y: 0, width: 100, height: 100)
+let b = a.extend(by: 3)
+a.reset() 
+
+// 아래 코드는 수정하지 마세요.
+let isExtended = b.width == 300 && b.height == 300
+let isZeroArea = a.x == 0 && a.y == 0 && a.width == 0 && a.height == 0
+
+print(isExtended && isZeroArea)
+
+```
+
+
+
 ### 17-3. Type Method
+- 형식과 연관된 메소드를 구현하고 호출하는 방법
+  - 타입 메소드 선언 문법
+  - 타입 메소드 호출 문법
+  - 메소드 오버라이딩
+
+```swift
+Type Methods
+
+static func name(parameters) -> ReturnType {
+  statements
+}
+
+class func name(parameters) -> ReturnType {
+  statements
+}
+
+Type.method(parameters)
+
+
+class Circle {
+  static let pi = 3.14
+  var radius = 0.0
+  
+  func getArea() -> Double {
+    return radius * radius * Circle.pi
+  }
+  
+  static func printPi() {
+    print(pi)
+  }
+  
+  class func printPi2() {
+    print(pi)
+  }
+}
+
+Circle.printPi() // 3.14
+
+class StrokeCircle: Circle {
+//  override static func printPi() { // Cannot override static method 오류 발생: 수퍼 클래스에서 static 키워드로 선언한 메소드는 서브클래스에서 오버라이드 할 수 없다!
+//    print(pi)
+//  }
+
+    override static func printPi2() { // class 메소드는 서브클래스에서 static 오버라이드 가능
+      print(pi)
+    }
+}
+```
+
+
+
 ### 17-4. 형식 메소드 구현하기
+```swift
+문제 설명
+코드가 정상적으로 실행되도록 새로운 자료형을 선언하고 형식 메소드를 구현해 주세요.
+
+제한
+string(from:) 메소드는 정수를 문자열로 변환합니다.
+integer(from:) 메소드는 문자열을 정수로 변환합니다.
+형식 메소드는 오버라이딩이 가능하도록 선언해야 합니다.
+
+import Foundation
+
+// 여기에서 새로운 자료형을 선언하고 형식 메소드를 구현해 주세요.
+class StringConverter {
+    static func string(from: Int) -> String {
+        return String(from)
+    }
+    
+    static func integer(from: String) -> Int? {
+        return Int(from)
+    }
+}
+
+// 아래에 있는 코드는 수정하지 마세요.
+let a = 123
+let b = "456"
+
+let str = StringConverter.string(from: a)
+if let num = StringConverter.integer(from: b) {
+   print(str == "123" && num == 456)
+} else {
+   print(false)
+}
+```
+
+
+
 ### 17-5. Subscript
+- 서브스크립트를 직접 구현하는 방법
+  - 서브스크립트 호출 문법
+  - 서브스크립트 선언 문법
+
+```swift
+Subscripts
+  instance[index]
+  instance[key]
+  instance[range]
+  
+let list = ["A", "B", "C"]
+list[0] // "A" -> 스퀘어브라켓을 통해 index를 넣어 값을 추출하는 것이 바로 서브스크립트다
+
+
+서브스크립트 문법 -> 메소드와 달리 리턴형을 생략할 수 없다
+subscript(parameters) -> ReturnType {
+  get {
+    return expression
+  }
+  set(name) {
+    statements
+  }
+}
+
+class List {
+  var data = [1, 2, 3]
+  
+  subscript(index: Int) -> Int {
+    get {
+      return data[index]
+    }
+    set {
+      data[index] = newValue
+    }
+  }
+}
+
+var l = List()
+l[0] // 1
+l[1] = 123
+
+
+struct Matrix {
+  var data = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+  
+  subscript(row: Int, col: Int) -> Int {
+    return data[row][col]
+  }
+}
+
+let m = Matrix()
+// m[0][0] // -> 이렇게 쓰면 작동 안 됨
+m[0, 0]
+```
+
+
+
 ### 17-6. 서브스크립트 구현하기
+```swift
+문제 설명
+Player 구조체는 선수의 이름과 번호를 저장합니다.
+Team 구조체는 팀 이름과 선수 목록을 저장합니다.
+선수 번호와 이름으로 선수를 검색할 수 있도록 서브스크립트를 추가해 주세요.
+
+문법 설명
+서브스크립트 선언 문법 ``` subscript(파라미터_목록) -> 리턴형 { get { return 표현식 } set(상수) {
+}
+}
+
+import Foundation
+
+struct Player {
+   let number: Int
+   let name: String
+}
+
+struct Team {
+   let name: String
+   let squad: [Player]
+   
+   // 여기에서 서브스크립트를 구현해 주세요.
+    subscript(num: Int) -> Player? {
+        for i in 0..<squad.count {
+            if squad[i].number == num {
+                return squad[i]
+            }
+        }
+        return nil
+    }
+        
+    subscript(name: String) -> Player? {
+        for i in 0..<squad.count {
+            if squad[i].name == name {
+                return squad[i]
+            }
+        }
+        return nil
+    }
+}
+
+// 아래에 있는 코드는 수정하지 마세요.
+let firstTeam = [
+   Player(number: 1, name: "Hugo Lloris"),
+   Player(number: 3, name: "Danny Rose"),
+   Player(number: 4, name: "Toby Alderweireld"),
+   Player(number: 5, name: "Jan Vertonghen"),
+   Player(number: 7, name: "Heung-Min Son"),
+   Player(number: 10, name: "Harry Kane"),
+   Player(number: 12, name: "Victor Wanyama"),
+   Player(number: 20, name: "Dele Alli"),
+   Player(number: 23, name: "Christian Eriksen"),
+   Player(number: 33, name: "Ben Davies")
+]
+let tot = Team(name: "Tottenham Hotspur", squad: firstTeam)
+
+var name: String?
+var number: Int?
+
+if let player = tot[7] {
+   name = player.name
+}
+
+if let player = tot["David de Gea"] {
+   number = player.number
+}
+print(name == .some("Heung-Min Son") && number == nil)
+
+```
 
 
 
@@ -3783,7 +4106,103 @@ struct Size {
 - 상속을 통해 코드 중복을 줄이는 방법과 OOP의 특징 중 하나인 다형성에 대한 공부
 
 ### 18-1. Inheritance
-### 18-2. Overriding
+- 클래스에서 상속을 통해 Super Class로부터 멤버를 상속하는 방법
+  - 클래스 계층
+  - Base Class, Super Class, Subclass
+  - 클래스 상속 문법
+  - Final Class
+
+- 스위프트에서는 다중 상속(Multiple Inheritance)이 불가능하다
+- 다중상속과 유사한 기능을 구현하고 싶다면 프로토콜을 사용하면 된다
+
+```swift
+class Figure {
+  var name = "Unknown"
+  
+  init(name: String) {
+    self.name = name
+  }
+  
+  func draw() {
+    print("draw \(name)")
+  }
+}
+
+class Circle: Figure {
+  var radius = 0.0
+}
+
+let c = Circle(name: "Circle")
+c.radius
+c.name
+c.draw() // draw Circle
+
+final class Rectangle: Figure { // final 키워드를 붙이면 더 이상 상속할 수 없다
+  var width = 0.0
+  var height = 0.0
+}
+
+// class Square: Rectangle {
+// }
+```
+
+
+
+### 18-2. Overriding(재정의)
+- Super Class로부터 상속한 멤버를 재정의하는 방법
+  - 오버라이딩 구현 패턴
+  - 메소드 오버라이딩
+  - 속성 오버라이딩
+  - 멤버 오버라이딩 금지 문법
+
+```swift
+class Figure {
+  var name = "Unknown"
+  
+  init(name: String) {
+    self.name = name
+  }
+  
+  func draw() {
+    print("draw \(name)")
+  }
+}
+
+class Circle: Figure {
+  var radius = 0.0
+  
+  var diameter: Double {
+    return radius * 2
+  }
+  
+  override func draw() {
+    super.draw()
+    print("Override Circle")
+  }
+}
+
+let c = Circle(name: "Circle")
+c.draw() 
+/* 
+draw Circle 
+Circle
+*/
+
+class Oval: Circle {
+  // 속성을 오버라이드 할 때는 반드시 슈퍼클래스의 속성을 따라가야(읽기, 쓰기 상태) 한다
+  override var diameter: Double {
+    get {
+      return super.diameter
+    }
+    set {
+      super.radius = newValue / 2
+    }
+  }
+}
+
+- final 키워드를 앞에 붙이면 상속받은 클래스에서 오버라이드가 불가능하다
+```
+
 ### 18-3. 클래스 계층 구현하기
 ### 18-4. Upcasting and Downcasting
 ### 18-5. Type Casting
