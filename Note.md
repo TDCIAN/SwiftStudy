@@ -4205,18 +4205,427 @@ class Oval: Circle {
 
 ### 18-3. 클래스 계층 구현하기
 ### 18-4. Upcasting and Downcasting
+- 인스턴스를 동일한 클래스 계층에 존재하는 다른 클래스 형식으로 처리하는 방법
+  - 업캐스팅
+  - 다운캐스팅
+
+```swift
+class Figure {
+  let name: String
+  
+  init(name: String) {
+    self.name = name
+  }
+  
+  func draw() {
+    print("draw \(name)")
+  }
+}
+
+class Rectangle: Figure {
+  var width = 0.0
+  var height = 0.0
+  
+  override func draw() {
+    super.draw()
+    print("rectangle \(width) * \(height)")
+  }
+}
+
+class Square: Rectangle {
+
+}
+
+let f = Figure(name: "Unknown")
+f.name // "Unknown"
+
+let r = Rectangle(name: "Rect")
+r.width // 0
+r.height // 0
+r.name // "Rect"
+
+let s = Squre(name: "Square")
+s.width // 0
+s.height // 0
+s.name // "Square"
+
+// Upcasting: 서브클래스 인스턴스를 슈퍼클래스 형식으로 저장
+let s: Figure = Squre(name: "Square")
+// s.width
+// s.height
+// s.name
+
+// 업캐스팅은 항상 성공한다(안전하다)
+
+let downcastedS = s as! Square // 다운캐스팅 -> 상대적으로 위험(크래시 발생 가능)
+downcastedS.name // Square
+downcasetdS.width // 0
+downcastedS.height // 0
+
+class Rhombus: Square {
+  var angle = 45.0
+}
+
+let dr = s as! Rhombus // 에러 발생 -> 인스턴스의 원래 형식인 Square보다 아래쪽에 있기 때문에
+```
+
+
+
 ### 18-5. Type Casting
+- Type Casting을 통해 인스턴스의 형식을 확인하고 다른 형식으로 캐스팅하는 방법
+  - Type Check Operator
+  - Type Casting Operator
+  - 다형성
+
+```swift
+Type Check Operator
+
+let num = 123
+
+num is Int // true
+num is Double // false
+num is String // false
+
+let t = Triangle(name: "Triangle")
+let r = Rectangle(name: "Rect")
+let s = Square(name: "Square")
+let c = Circle(name: "Circle")
+
+r is Rectangle // true
+r is Figure // true
+r is Squre // false
+
+
+Type Casting Operator
+
+(1) Compile Time Case
+- expression as Type
+
+(2) Runtime Cast
+- expression as? Type -> Conditional Cast
+- expression as! Type -> Forced Cast
+
+let nsstr = "str" as NSString
+
+//"str" as Int -> 에러 발생
+
+t as? Triangle
+t as! Triangle
+
+var upcasted: Figure = s
+upcasted = s as Figure
+
+upcasted as? Square
+upcasted as! Square
+upcasted as? Rectangle
+upcasted as! Rectangle
+
+upcasted as? Circle // nil
+// upcasted as! Circle // 크래시 발생 -> forced casting은 되도록 사용하지 않는 것이 좋다
+
+if let c = upcasted as? Circle {
+
+}
+
+let list = [t, r, s, c] // 배열에 서로 다른 형식을 넣었는데 문제가 없다 -> 가장 인접한 슈퍼 클래스 형식(Figure)으로 업캐스팅 되었기에 가능함
+
+for item in list {
+  item.draw()
+}
+/* 
+Rectangle 0.0 * 0.0
+draw Square
+Rectangle 0.0 * 0.0
+draw Circle
+Circle
+*/ -> 형식은 슈퍼클래스인 Figure로 됐지만, 막상 출력할 때는 자식 클래스에 있는 내용들이 출력 됨 -> 다형성(Polymorphism)
+
+for item in list {
+  if let c = item as? Circle {
+    c.radius
+  }
+}
+```
+
+
+
 ### 18-6. Any and AnyObject
+- Swift가 제공하는 범용 자료형
+  - Any와 AnyObject
+  - Type-Erasing Wrapper
+  - 타입 캐스팅 패턴 활용
+
+```swift
+Any, AnyObject
+Any는 모든 형식을 저장할 수 있고, AnyObject는 모든 클래스 형식을 저장할 수 있다
+
+var data: Any = 1
+data = 2.3 // Any로 선언하면 형식에 관계없이 모두 저장 가능
+data = "str"
+data = [1, 2, 3]
+data = NSString()
+
+var obj: AnyObject = NSString()
+// obj = 1 // 에러 발생
+
+if let str = data as? String {
+  print(str.count)
+} else if let list = data as? [Int] {
+  
+}
+
+Type Casting Pattern
+
+switch data {
+case let str as String:
+  print(str.count)
+case let list as [Int]:
+  print(list.count)
+case is Double:
+  print("Double Value")
+default:
+  break
+}
+```
+  
+  
+  
 ### 18-7. Any 배열에 저장되어 있는 값 분류하기
+```swift
+list 배열에 저장되어 있는 값을 형식에 맞는 배열에 추가해 주세요.
+
+import Foundation
+
+let list: [Any] = [1, "2", 3.5, "Hello", -123]
+
+var intList = [Int]()
+var doubleList = [Double]()
+var strList = [String]()
+
+// 여기에서 구현해 주세요.
+for i in 0..<list.count {
+    if let intValue = list[i] as? Int {
+        intList.append(intValue)
+    } else if let doubleValue = list[i] as? Double {
+        doubleList.append(doubleValue)
+    } else if let strValue = list[i] as? String {
+        strList.append(strValue)
+    }
+}
+
+print(intList.count, doubleList.count, strList.count)
+```
+
+
+
 ### 18-8. Overloading
+- 오버로딩을 통해 동일한 이름을 가진 멤버를 구현하는 방법
+  - 함수 오버로딩
+  - 메소드 오버로딩
+  - 네 가지 오버로딩 규칙
+
+```swift
+
+func process(value: Int) {
+  print("process Int")
+}
+
+func process(value: String) {
+  print("process String")
+}
+
+func process(value: String, anotherValue: String) {
+  
+}
+
+func process(_ value: String) {
+
+}
+
+func process(value: Double) -> Int {
+  return Int(value)
+}
+
+func process(value: Double) -> String? {
+  return String(value)
+}
+
+let result = process(value: 12.34) as Int
+
+
+process(value: 0) // process Int
+process(value: "str") // process String
+process("str")
+
+struct Rectangle {
+  func area() -> Double {
+    return 0.0
+  }
+  
+  static func area() -> Double {
+    return 0.0
+  }
+}
+
+let r = Rectangle()
+r.area()
+Rectangle.area()
+
+Overloading 
+Rule #1
+- 함수 이름이 동일하면 파라미터 수로 식별
+Rule #2
+- 함수 이름, 파라미터가 수가 동일하면 파라미터 자료형으로 식별
+Rule #3
+- 함수 이름, 파라미터 수, 파라미터 자료형이 동일하면 Argument Label로 식별
+Rule #4
+- 함수 이름, 파라미터 수, 파라미터 자료형, Argument Label이 동일하면 리턴형으로 식별
+```
 
 
 
 ## Initializer and Deinitializer
 - 인스턴스의 생성과 해제를 담당하는 코드를 구현하는 방법
 
-### 19-1. Initializers
+### 19-1. Initializers(생성자)
+- 생성자와 인스턴스 초기화
+  - 인스턴스 초기화
+  - Default Initializer
+  - Memberwise Initializer -> memberwise는 '회원'이라는 의미
+
+```swift
+Initialization
+Default Initializer
+
+class Position {
+  var x = 0.0
+  var y = 0.0
+  var z: Double? = nil
+  
+}
+
+let p = Position() // 이렇게 하면 Default Initializer가 호출된다
+
+
+Initializer Syntax
+
+init(parameters) {
+  initialization
+}
+
+TypeName(parameters)
+
+class SizeObj {
+  var width = 0.0
+  var height = 0.0
+  
+  init(width: Double, height: Double) {
+    self.width = width
+    self.height = height
+  }
+  
+  // Convenience Initializer
+  convenience init(value: Double) {
+    // width = value
+    // height = value
+    self.init(width: value, height: value) // 이런 식으로 다른 이니셜라이저를 사용하는 것을 Initializer Delegation 이라고 한다
+  }
+}
+
+
+Memberwise Initializer
+
+struct SizeValue {
+  var width = 0.0
+  var height = 0.0
+}
+
+let s = SizeValue()
+SizeValue(width: 1.2, height: 3.4)
+```
+
+
 ### 19-2. Class Initializers
+- 클래스에서 구현하는 특별한 생성자
+  - Designated Initializer
+  - Convenience Initializer
+  - Automatic Initializer Inheritance
+
+
+- 클래스에서 구현하는 이니셜라이저는 Designated Initializer와 Convenience Initializer로 구분된다
+```swift
+Designated Initializer(지정 생성자)
+
+init(parameters) {
+  initialization
+}
+
+
+
+Convenience Initializer(간편 생성자)
+
+convenience init(parameters) {
+  initialization
+}
+
+
+
+class Position {
+  var x: Double
+  var y: Double
+  
+  init(x: Double, y: Double) {
+    self.x = x
+    self.y = y
+  }
+  
+  convenience init(x: Double) {
+    self.init(x: x, y: 0.0)
+  }
+}
+
+Initializer Inheritance
+
+class Figure {
+  var name: String
+  
+  init(name: String) {
+    self.name = name
+  }
+  
+  func draw() {
+    print("draw \(name)")
+  }
+  
+  convenience init() {
+    self.init(name: "unknown")
+  }
+}
+
+class Rectangle: Figure {
+  var width: Double = 0.0
+  var height: Double = 0.0
+  
+  init(name: String, width: Double, height: Double) {
+    self.width = width
+    self.height = height
+    // 현재 클래스의 속성을 초기화 한 후 상위 구현을 호출한다
+    super.init(name: name)
+  }
+  
+  override init(name: String) {
+    width = 0
+    height = 0
+    super.init(name: name)
+  }
+  
+  convenience init() {
+    self.init(name: "unknown")
+  }
+}
+```
+
+
 ### 19-3. Required Initializer
 ### 19-4. Initializer Delegation
 ### 19-5. 생성자 & 생성자 델리게이션 구현하기
