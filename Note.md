@@ -4675,14 +4675,166 @@ class Rectangle: Figure {
   - 클래스 초기화 방식
 
 ```swift
+Initializer Delegation -> 이니셜라이저가 다른 이니셜라이저를 호출하는 방식으로 구현됨
 
+Value Type일 때
+
+struct Size {
+  var width: Double
+  var height: Double
+  
+  init(w: Double, h: Double) {
+    width = w
+    height = h
+  }
+  
+  init(value: Double) {
+    // width = value
+    // height = value
+    self.init(w: value, h: value)
+  }
+}
+
+
+Class일 때
+Rule 1
+- A designated initializer must call a designated initializer from its immediate superclass.
+-> 데지그네이티드 이니셜라이저는 반드시 슈퍼클래스의 데지그네이티드 이니셜라이저를 호출해야 한다 -> Delegate Up이라고 한다
+
+
+Rule 2
+- A convenience initializer must call another initializer from the same class.
+-> 컨비년스 이니셜라이저는 동일한 클래스에 있는 다른 이니셜라이저를 호출해야 한다 -> Delegate Across라고 한다
+-> 호출할 이니셜라이저의 종류(데지그네이티드, 컨비년스)는 상관이 없다
+
+
+Rule 3
+- A convenience initializer must ultimately call a designated initializer
+-> 컨비년스 이니셜라이저를 호출했을 때 최종적으로 동일한 클래스에 있는 데지그네이티드 이니셜라이저가 호출되어야 한다
+
+class Figure {
+  let name: String
+  
+  init(name: String) {
+    self.name = name
+  }
+  
+  convenience init() {
+    self.init(name: "unknown") // Delegate Across (Rule 2)
+  }
+}
+
+class Rectangle: Figure {
+  var width = 0.0
+  var height = 0.0
+  
+  init(n: String, w: Double, h: Double) {
+    width = w
+    height = h
+    super.init(name: n) // Delegate Up
+  }
+  
+  convenience init(value: Double) {
+    self.init(n: "rect", w: value, h: value) 
+  }
+}
+
+class Square: Rectangle {
+  // convenience initializer는 어떤 경우에도 Delegate Up이 불가능하다
+  convenience init(value: Double) {
+    self.init(n: "square", w: value, h: value)
+  }
+  
+  convenience init() {
+    self.init(value: 0.0) // Rule 3
+  }
+}
 ```
 
 
 
 ### 19-5. 생성자 & 생성자 델리게이션 구현하기
+
+
+
 ### 19-6. Failable initializer
-### 19-7. Deinitializer
+- 초기화 실패를 옵셔널로 처리하는 방법
+  - 초기화 성공과 실패
+  - 오버로딩 규칙
+  - 생성자 델리게이션 규칙
+  - 재정의 규칙
+
+
+```swift
+Failable Initializer
+
+init?(parameters) {
+  initialization
+}
+
+init!(parameters) {
+  initialization
+}
+
+struct Position {
+  let x: Double
+  let y: Double
+  
+  init?(x: Double, y: Double) {
+    guard x >= 0.0, y >= 0.0 else { return nil }
+    
+    self.x = x
+    self.y = y
+  }
+  
+  init!(value: Double) {
+    guard value >= 0.0 else { return nil }
+    
+    // self.x = value
+    // self.y = value
+    
+    self.init(x: value, y: value)
+  }
+}
+
+var a = Position(x: 12, y: 34) // Position -> 정상 초기화
+a = Position(x: -12, y: 0) // nil -> 음수여서 nil
+
+var b = Position(value: 12) // Position
+
+b = Position(value: -12) // nil
+
+```
+
+
+### 19-7. Deinitializer(소멸자)
+- 인스턴스가 해제되기 전에 호출되는 소멸자
+  - 메모리 정리 방식
+  - 일반적인 구현 패턴
+
+```swift
+class Size {
+  var width = ./0
+  var height = 0.0
+}
+
+class Position {
+  var x = 0.0
+  var y = 0.0
+}
+
+class Rect {
+  var origin = Position()
+  var size = Size()
+  
+  deinit {
+    print("deinit \(self)")
+  }
+}
+
+var r: Rect? = Rect()
+r = nil
+```
 
 
 
@@ -4690,21 +4842,338 @@ class Rectangle: Figure {
 - 이미 존재하는 형식을 확장하는 방법
 
 ### 20-1. Extension - Syntax
-### 20-2. Adding Properties
-### 20-3. 어제 날짜를 리턴하는 속성과 월, 일을 리턴하는 속성 추가하기
-### 20-4. Adding Methods
-### 20-5. 문자열 앞, 뒤 공백을 제거하는 메소드 추가하기
-### 20-6. Adding Initializers
-### 20-7. 년, 월, 일로 날짜를 초기화하는 생성자 추가하기
-### 20-8. Adding Subscripts
-### 20-9. 문자열에 정수 인덱스로 접근하는 Subscript 추가하기
+- 익스텐션으로 형식을 확장하는 방법
+  - 익스텐션 문법
+  - 확장 가능한 멤버 종류
+  - 구조체 확장
+  - 프로토콜 구현 추가
 
+```swift
+struct Size {
+  var width = 0.0
+  var height = 0.0
+}
+
+extension Size {
+  var area: Double {
+    return width * height
+  }
+}
+
+let s = Size()
+s.width
+s.height
+s.area
+
+extension Size: Equatable {
+  public static func == (lhs: Size, rhs: Size) -> Bool {
+    return lhs.width == rhs.width && lhs.height == rhs.height
+  }
+}
+```
+
+
+
+### 20-2. Adding Properties
+- 익스텐션으로 계산 속성을 추가하는 코드
+  - Date 형식에 년도를 리턴하는 속성 추가
+  - Double 형식에 라디안/디그리 변환 속성 추가
+
+```swift
+Adding Properties
+
+extension Date {
+  var year: Int {
+    let cal = Calendar.current
+    return cal.component(.year, from: self)
+  }
+  
+  var month: Int {
+    let cal = Calendar.current
+    return cal.component(.month, from: self)
+  }
+}
+
+let today = Date()
+today.year
+today.month
+
+extension Double {
+  var radianValue: Double {
+    return (Double.pi * self) / 180.0
+  }
+  
+  var degreeValue: Double {
+    return self * 180.0 / Double.pi
+  }
+}
+
+let dv = 45.0
+dv.radianValue // 0.785398163...
+```
+
+
+
+### 20-3. 어제 날짜를 리턴하는 속성과 월, 일을 리턴하는 속성 추가하기
+```swift
+코드가 정상적으로 동작하도록 Extension을 구현해 주세요.
+
+yesterday 속성은 24시간 이전 날짜를 리턴합니다.
+month 속성은 "월"을 리턴합니다.
+day 속성은 "일"을 리턴합니다.
+
+import Foundation
+
+// 여기에서 구현
+extension Date {
+    var yesterday: Date {
+        return Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+    }
+    
+    var month: Int {
+        return Calendar.current.component(.month, from: self)
+    }
+    
+    var day: Int {
+        return Calendar.current.component(.day, from: self)
+    }
+
+}
+
+func solution(_ year:Int, _ month:Int, _ day:Int) -> [Int] {
+    let calendar = Calendar.current
+    var comps = DateComponents()
+    comps.year = year
+    comps.month = month
+    comps.day = day
+
+    let date = calendar.date(from: comps)!
+    
+    let m = date.yesterday.month
+    let d = date.yesterday.day
+    
+    return [m, d]
+}
+
+```
+
+
+
+### 20-4. Adding Methods
+- 익스텐션으로 메소드를 추가하는 코드
+  - Double 형식에 화씨/섭씨 온도 변환 메소드 추가
+  - Date 형식에 문자열 포멧팅 메소드 추가
+  - String 형식에 랜덤 문자열 생성 메소드 추가
+
+```swift
+Adding Methods
+
+extension Double {
+  func toFahrenheit() -> Double {
+    return self * 9 / 5 + 32
+  }
+  
+  func toCelsius() -> Double {
+    return (self - 32) * 5 / 9
+  }
+  
+  static func convertToFahrenheit(from celsius: Double) -> Double {
+    return celsius.toFahrenheit()
+  }
+}
+
+let c = 30.0 // 30
+c.toFahrenheit() // 86
+
+Double.converToFahrenheit(from: 30.0) // 86
+
+extension Date {
+  func toString(format: String = "yyyyMMdd") -> String {
+    let privateFormatter = DateFormatter()
+    privateFormatter.dateFormat = format
+    return privateFormatter.string(from: self)
+  }
+}
+
+let today = Date()
+today.toString()
+
+today.toString(format: "MM/dd/yyyy")
+```
+
+
+### 20-5. 문자열 앞, 뒤 공백을 제거하는 메소드 추가하기
+```swift
+Extension으로 문자열 앞, 뒤 공백을 제거하는 메소드를 추가해 주세요.
+
+import Foundation
+
+extension String {
+    func trimmed() -> String {
+        let charSet = CharacterSet.whitespaces
+        return self.trimmingCharacters(in: charSet)
+    }
+}
+
+func solution(_ source:String) -> String {
+    return source.trimmed()
+}
+```
+
+
+
+### 20-6. Adding Initializers
+- 익스텐션으로 생성자를 추가하는 코드 작성
+  - Date 형식에 년,월,일로 초기화 하는 생성자 추가
+  - UIColor 클래스에 RGB 파라미터를 받는 생성자 추가
+  - 익스텐션으로 생성자를 구현할 때의 장점
+
+```swift
+extension Date {
+  init?(year: Int, month: Int, day: Int) {
+    let cal = Calendar.current
+    var comp = DateComponents()
+    comp.year = year
+    comp.month = month
+    comp.day = day
+    
+    guard let date = cal.date(from: comp) else { return nil }
+    
+    self = date
+  }
+}
+
+Date(year: 2021, month: 7, day: 12)
+
+
+extension UIColor {
+  convenience init(red: Int, green: Int, blue: Int) {
+    self.init(red: CGFloat(red) / 255, green: CGFloat(green) / 255, blue: CGFloat(blue) / 255, alpha: 1.0)
+  }
+}
+
+UIColor(red: 0, green: 0, blue: 255)
+
+struct Size {
+  var width = 0.0
+  var height = 0.0
+  
+}
+
+extension Size {
+  init(value: Double) {
+    width = value
+    height = value
+  }
+}
+
+Size()
+Size(width: 12, height: 34)
+```
+
+
+
+### 20-7. 년, 월, 일로 날짜를 초기화하는 생성자 추가하기
+```swift
+Extension으로 년, 월, 일로 날짜를 초기화 하는 생성자를 구현해 주세요.
+
+import Foundation
+
+extension Date {
+    init?(year: Int, month: Int, day: Int) {
+        let cal = Calendar.current
+        var component = DateComponents()
+        component.year = year
+        component.month = month
+        component.day = day
+        
+        guard let date = cal.date(from: component) else { return nil }
+        
+        self = date
+    }
+}
+
+let date = Date(year: 2011, month: 10, day: 5)
+
+func solution(_ year:Int, _ month:Int, _ day:Int) -> String {
+   let formatter = DateFormatter()
+   formatter.dateFormat = "yyyyMMdd"
+   
+   guard let date = Date(year: year, month: month, day: day) else {
+      return "error"
+   }
+   
+   return formatter.string(from: date)
+}
+```
+
+
+
+### 20-8. Adding Subscripts
+- 익스텐션으로 서브스크립트를 추가하는 코드 작성
+  - String 형식에 정수 인덱스를 처리하는 서브스크립트 추가
+  - Date 형식에 컴포넌트를 리턴하는 서브스크립트 추가
+
+```swift
+extension String {
+  subscript(idx: Int) -> String? {
+    guard (0..<count).contains(idx) else { return nil }
+    
+    let target = index(startIndex, offsetBy: idx)
+    return String(self[target])
+  }
+}
+
+let str = "Swift"
+str[1] // "w"
+str[100] // nil
+
+extension Date {
+  subscript(component: Calendar.Component) -> Int? {
+    let cal = Calendar.current
+    return cal.component(component, from: self)
+  }
+}
+
+let today = Date()
+today[.year]
+today[.month]
+today[.day]
+```
+
+### 20-9. 문자열에 정수 인덱스로 접근하는 Subscript 추가하기
+```swift
+문제 설명
+문자열에서 특정 문자에 접근할 때 [ ] 사이에 String.Index 형식의 인덱스를 전달해야 합니다.
+Int 형식의 인덱스를 지원하는 Subscript를 문자열에 형식에 추가해 주세요
+
+import Foundation
+
+func solution(_ source:String, _ index:Int) -> String {
+    return source[index]
+}
+
+extension String {
+  subscript(idx: Int) -> String {
+    let targetIndex = index(startIndex, offsetBy: idx)
+    return String(self[targetIndex])
+  }
+}
+
+```
 
 
 ## Protocol
 - 프로토콜을 통해 형식이 구현해야 하는 요구사항을 선언하고 이 요구사항을 충족하도록 형식을 구현하는 방법
 
 ### 21-1. Protocol Syntax
+- 프로토콜 선언 문법과 프로토콜 채용 문법
+  - 프로토콜 선언 문법
+  - 프로토콜 채용 문법
+  - 요구사항 구현
+  - AnyObject 프로토콜
+  - 클래스 프로토콜
+
 ### 21-2. Property Requirements
 ### 21-3. Method Requirements
 ### 21-4. Initializer Requirements
