@@ -4626,8 +4626,60 @@ class Rectangle: Figure {
 ```
 
 
-### 19-3. Required Initializer
+### 19-3. Required Initializer(필수 생성자)
+- 모든 서브클래스에서 구현해야 하는 필수 생성자
+```swift
+Required Initializer
+
+required init(parameters) {
+  initialization
+}
+
+class Figure {
+  var name: String
+  
+  required init(name: String) {
+    self.name = name
+  }
+  
+  func draw() {
+    print("draw \(name)")
+  }
+}
+
+class Rectangle: Figure {
+  var width = 0.0
+  var height = 0.0
+  
+  init() {
+    width = 0.0
+    height = 0.0
+    super.init(name: "unknown")
+  }
+  
+  required init(name: String) {
+    width = 0.0
+    height = 0.0
+    super.init(name: name)
+  }
+}
+```
+
+
+
 ### 19-4. Initializer Delegation
+- 생성자 델리게이션을 통해 인스턴스가 초기화 되는 과정
+  - 값 형식의 생성자 델리게이션
+  - 참조 형식의 생성자 델리게이션
+  - 생성자 델리게이션 규칙
+  - 클래스 초기화 방식
+
+```swift
+
+```
+
+
+
 ### 19-5. 생성자 & 생성자 델리게이션 구현하기
 ### 19-6. Failable initializer
 ### 19-7. Deinitializer
