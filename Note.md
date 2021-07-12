@@ -6139,8 +6139,17 @@ func parsing(data: [String: Any]) throws {
     throw DataParsingError.invalidType
   }
   
-  // Parsing
+  // Parsing 
 }
+
+try Statements
+
+try expression
+try? expression
+try! expression
+
+try? parsing(data: [:]) // nil
+
 ```
 
 
