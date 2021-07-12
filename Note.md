@@ -5698,10 +5698,191 @@ rentedCar?.lessee = person
 person = nil // 여전히 Person Instance의 카운트는 1
 rentedCar = nil // 여전히 Car Instance의 카운트는 1
 
+Strong Reference Cycle 문제를 해결하는 두 가지 방법
+- Weak Reference
+- Unowned Reference
+
+(1) Weak Reference
+class Person {
+  var name = "John Doe"
+  var car: Car?
+  
+  deinit {
+    print("person deinit")
+  }
+}
+
+class Car {
+  var model: String
+  weak var lessee: Person?
+  
+  init(model: String) {
+    self.model = model
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var person: Person? = Person()
+var retnedCar: Car? = Car(model: "Porsche")
+
+person?.car = rentedCar
+rentedCar?.lessee = person
+
+person = nil // person deinit -> 참조 카운팅이 0이 된다
+rentedCar = nil // car deinit -> 참조 카운팅이 0이 된다
+
+
+
+(2) Unowned Reference
+class Person {
+  var name = "John Doe"
+  var car: Car?
+  
+  deinit {
+    print("person deinit")
+  }
+}
+
+class Car {
+  var model: String
+  unowned var lessee: Person
+  
+  init(model: String, lessee: Person) {
+    self.model = model
+    self.lessee = lessee
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var person: Person? = Person()
+var retnedCar: Car? = Car(model: "Porsche"m lessee: person!)
+
+person?.car = rentedCar
+rentedCar?.lessee = person
+
+person = nil // person deinit -> nil
+rentedCar = nil // car deinit -> nil
 ```
 
 
 ### 22-5. Closure Capture List
+- Closure Capture List를 통해 클로저에서 발생하는 강한 참조 사이클을 해결하는 방법
+
+```swift
+Closure Capture List
+
+class Car {
+  var totalDrivingDistance = 0.0
+  var totalUsedGas = 0.0
+  
+  lazy var gasMileage: () -> Double = {
+    return self.totalDrivingDistance / self.totalUsedGas
+  }
+  
+  func drive() {
+    self.totalDrivingDistance = 1200.0
+    self.totalUsedGas = 73.0
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var myCar: Car? = Car()
+myCar?.drive()
+
+myCar = nil // car deinit -> 정상적 해제
+
+myCar?.gasMileage() // 16.43835616...
+
+
+클로저 캡처리스트 문법
+
+{ [list] (parameters) -> ReturnType in
+  Code
+}
+
+{ [list] in
+  Code
+}
+
+Value Type(값 형식)
+
+{ [valueName] in
+  Code
+}
+
+var a = 0
+var b = 0
+let c = { [a] in print(a, b) } // 값 형식을 클로저 캡처리스트에 추가하면 참조 대신 복사본을 캡처한다
+
+a = 1
+b = 2
+c()
+
+
+Reference Type(참조 형식)
+
+{ [weak instanceName, unowned instanceName] in
+  statements
+}
+
+// Weak
+class Car {
+  var totalDrivingDistance = 0.0
+  var totalUsedGas = 0.0
+  
+  lazy var gasMileage: () -> Double = { [weak self] in
+    guard let strongSelf = self else { return 0.0 }
+    return strongSelf.totalDrivingDistance / strongSelf.totalUsedGas
+  }
+  
+  func drive() {
+    self.totalDrivingDistance = 1200.0
+    self.totalUsedGas = 73.0
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var myCar: Car? = Car()
+myCar?.drive()
+myCar?.gasMileage()
+myCar = nil
+
+// Unowned
+class Car {
+  var totalDrivingDistance = 0.0
+  var totalUsedGas = 0.0
+  
+  lazy var gasMileage: () -> Double = { [unowned self] in
+    return self.totalDrivingDistance / self.totalUsedGas
+  }
+  
+  func drive() {
+    self.totalDrivingDistance = 1200.0
+    self.totalUsedGas = 73.0
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var myCar: Car? = Car()
+myCar?.drive()
+myCar?.gasMileage()
+myCar = nil
+```
 
 
 
@@ -5709,9 +5890,207 @@ rentedCar = nil // 여전히 Car Instance의 카운트는 1
 - 형식에 독립적인 코드를 구현
 
 ### 23-1. Generic Function
+- 특정 형식과 연관되지 않은 함수를 구현하는 방법
+  - 제네릭 함수
+  - Type Parameters
+  - Type Constraints
+  - Specialization
+
+```swift
+Generics
+
+func swapInteger(lhs: inout Int, rhs: inout Int) {
+  let tmp = lhs
+  lhs = rhs
+  rhs = tmp
+}
+
+var a = 10
+var b = 20
+swapInteger(lhs: &a, rhs: &b)
+a
+b
+
+
+Generic Function
+func name<T>(parameters) -> Type { // 여기에서 <T>의 T는 Type Parameter를 의미
+  code
+}
+
+func swapValue<T>(lhs: inout T, rhs: inout T) {
+  let tmp = lhs
+  lhs = rhs
+  rhs = tmp
+}
+
+a = 1
+b = 2
+swapValue(lhs: &a, rhs: &b)
+a // 2
+b // 1
+
+var c = 1.2
+var d = 3.4
+swapValue(lhs: &c, rhs: &d)
+c // 3.4
+d // 1.2
+
+
+
+Type Constraints(형식 제약)
+
+func swapValue<T: Equatable>(lhs: inout T, rhs: inout T) { // Equtable일 때만 사용 가능
+  print("generic version")
+  if lhs == rhs { return }
+  
+  let tmp = lhs
+  lhs = rhs
+  rhs = tmp
+}
+
+Specialization
+
+func swapValue<T: Equatable>(lhs: inout T, rhs: inout T) { // Equtable일 때만 사용 가능
+  print("specialized version")
+  if lhs == rhs { return }
+  
+  let tmp = lhs
+  lhs = rhs
+  rhs = tmp
+}
+
+var a = 1
+var b = 2
+swapValue(lhs: &a, rhs: &b) // generic version
+
+var c = "Swift"
+var d = "Programming"
+swapValue(lhs: &c, rhs: &d) // specialized version
+
+```
+
+
 ### 23-2. 두 값을 비교하는 제네릭 함수 구현하기
+```swift
+a, b, c, d에 모두 true가 저장되도록 제네릭 함수를 구현하고 Color 구조체를 수정해 주세요.
+
+import Foundation
+
+// 여기에서 제네릭 함수를 구현해 주세요.
+func equal<T: Equatable>(lhs: T, rhs: T) -> Bool {
+    if lhs == rhs { 
+        return true
+    } else {
+        return false
+    }
+}
+
+// Color 값을 비교할 수 있도록 구현해 주세요.
+struct Color: Equatable {
+   let r: Double
+   let g: Double
+   let b: Double   
+}
+
+let a = equal(lhs: 1, rhs: 1)
+let b = equal(lhs: 12.34, rhs: 12.34)
+let c = equal(lhs: "Hello", rhs: "Hello")
+let d = equal(lhs: Color(r: 0, g: 0, b: 0), rhs: Color(r: 0, g: 0, b: 0))
+
+print(a && b && c && d)
+```
+
+
+
 ### 23-3. Generic Types
+- 제네릭 타입을 선언하고 형식 내부에서 사용하는 다양한 형식을 타입 파라미터로 대체하는 방법
+  - 제네릭 타입
+  - 형식 표기 방식
+  - 익스텐션으로 제네릭 타입 확장
+  - 확장 대상 제한
+
+```swift
+Generic Types
+
+class Name<T> {
+  code
+}
+
+struct Name<T> {
+  code
+}
+
+enum Name<T> {
+  code
+}
+
+struct Color<T> {
+  var red: T
+  var green: T
+  var blue: T
+}
+
+var c = Color(red: 128, green: 80, blue: 200) // 타입: Color<Int>
+
+var d = Color(red: 128.0, green: 80.0, blue: 200.0) // 타입: Color<Double>
+
+extension Color where T == Int { // Int일 때만 가능하게 조건 추가
+  func getComponents() -> [T] {
+    return [red, green, blue]
+  }
+}
+
+let intColor = Color(red: 1, green: 2, blue: 3)
+intColor.getComponents() // [1, 2, 3]
+
+let dblColor = Color(red: 1.0, green: 2.0, blue: 3.0)
+dblColor.getComponents()
+
+```
+
+
+
 ### 23-4. Associated Types
+- 프로토콜 내에서 실제 형식으로 대체되는 연관 형식을 선언하는 방법
+  - 제네릭 프로토콜
+  - Associated Types
+  - typealias를 통한 실제 형식 선언
+  - 연관 형식에 제약 추가
+
+```swift
+Associated Types(연관 형식)
+
+associatedtype Name
+
+protocol QueueCompatible {
+  associatedType Element: Equatable // 연관형식 선언
+  func enqueue(value: Element)
+  func dequeue() -> Element?
+}
+
+class IntegerQueue: QueueCompatible {
+  typealias Element = Int
+  
+  func enqueue(value: Int) {
+  
+  }
+  
+  func dequeue() -> Int? {
+    return 0
+  }
+}
+
+class DoubleQueue: QueueCompatible {
+  func enqueue(value: Double) {
+  
+  }
+  
+  func dequeue() -> Double? {
+    return 0
+  }
+}
+
+```
 
 
 
@@ -5719,6 +6098,53 @@ rentedCar = nil // 여전히 Car Instance의 카운트는 1
 - 코드에서 발생할 수 있는 다양한 오류를 크래시 없이 처리하는 방법
 
 ### 24-1. Error Handling
+- Swift의 에러 처리 패턴
+  - Error 프로토콜
+  - 컴파일 타임 에러와 런타임 에러
+  - throw와 throws
+  - Throwing function 구현
+  - 오류 처리 패턴
+  - try 표현식
+
+```swift
+Error Handling
+
+throw expression
+
+func name(parameters) throws -> ReturnType { // Throwing Function(Method)
+  statements
+}
+
+init(parameters) throws { // Throwing Initializer
+  statements
+}
+
+{ (parameters) throws -> ReturnType in // Throwing Closure
+  statements
+}
+
+
+enum DataParsingError: Error {
+  case invalidType
+  case invalidField
+  case missingRequiredField(String)
+}
+
+func parsing(data: [String: Any]) throws {
+  guard let _ = data["name"] else {
+    throw DataparsingError.missingRequiredField("name")
+  }
+  
+  guard let _ = data["age] as? Int else {
+    throw DataParsingError.invalidType
+  }
+  
+  // Parsing
+}
+```
+
+
+
 ### 24-2. do-catch Statements
 ### 24-3. Optional Try
 ### 24-4. defer Statements
