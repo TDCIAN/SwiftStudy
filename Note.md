@@ -5174,29 +5174,533 @@ extension String {
   - AnyObject 프로토콜
   - 클래스 프로토콜
 
+```swift
+프로토콜 정의(Defining Protocols)
+
+protocol ProtocolName {
+  propertyRequirements
+  methodRequirements
+  initializerRequirements
+  subscriptRequirements
+}
+
+protocol ProtocolName: Protocol, ... {
+
+}
+
+protocol Something {
+  func doSomething()
+}
+
+프로토콜 채용(Adopting Protocols)
+
+struct Size: Something {
+  func doSomething() {
+    
+  }
+}
+
+Class-Only Protocols
+
+protocol SomethingObject: AnyObject, Something { // AnyObject를 채용하면 클래스에서만 채용 가능하다
+
+}
+
+// struct Value: SomethingObject { // SomethingObject의 경우 AnyObject 타입이기 때문에 구조체에서는 채용할 수 없다
+// 
+// }
+
+class Object: SomethingObject {
+  func doSomething() {
+  
+  }
+}
+
+```
+
+
+
 ### 21-2. Property Requirements
+- 프로토콜에서 속성을 선언하고 형식에서 요구사항을 구현
+  - var 키워드 용법
+  - 가변성 선언
+  - static 키워드와 class 키워드
+
+```swift
+Property Requirements
+
+protocol ProtocolName {
+  var name: Type { get set }
+  static var name: Type { get set }
+}
+
+
+protocol Figure {
+  static var name: String { get set }
+}
+
+struct Rectangle: Figure {
+  static var name = "Rect"
+}
+
+struct Triangle: Figure {
+  static var name = "Triangle"
+}
+
+class Circle: Figure {
+  static var name: String {
+    get {
+      return "Circle"    
+    }
+    set {
+    
+    }
+  }
+}
+```
+
+
+
 ### 21-3. Method Requirements
+- 프로토콜에서 메소드를 선언하고 형식에서 요구사항을 구현
+  - mutating 메소드 선언
+  - static 키워드와 class 키워드
+
+```swift
+Method Requirements
+
+protocol ProtocolName {
+  func name(param) -> ReturnType
+  static func name(param) -> ReturnType
+  mutating func name(param) -> ReturnType
+}
+
+protocol Resettable {
+  static func reset()
+}
+
+class Size: Resettable {
+  var width = 0.0
+  var height = 0.0
+  
+  func reset() {
+    width = 0.0
+    height = 0.0
+  }
+  
+  static func reset() {
+  
+  }
+}
+
+```
+
+
+
 ### 21-4. Initializer Requirements
+- 프로토콜에서 생성자를 선언하고 형식에서 요구사항을 구현
+  - 구조체와 클래스에서 생성자 구현의 차이
+  - final 클래스에서 프로토콜 구현
+  - 상속과 중복 선언 오류
+  - Non-failble Initializer와 Failable Initializer
+
+```swift
+Initializer Requirements
+
+protocol ProtocolName {
+  init(param)
+  init?(param)
+  init!(param)
+}
+
+protocol Figure {
+  var name: String { get }
+  init(n: String)
+}
+
+struct Rectangle: Figure {
+  var name: String
+  init(n: String) {
+    name = n
+  }
+}
+
+class Circle: Figure {
+  var name: String
+  
+  required init(n: String) { // required 안 붙이면 에러 발생함
+    name = n
+  }
+}
+
+final class Triangle: Figure {
+  var name: String
+  
+  init(n: String) { // final class이므로 required 안 붙여도 에러 없음
+    name = n
+  }
+}
+
+class Oval: Circle {
+  var prop: Int
+  
+  init() {
+    prop = 0
+    super.init(n: "Oval")
+  }
+  
+  required convenience init(n: String) {
+    self.init()
+  }
+}
+
+protocol Grayscale {
+  init?(white: Double)
+}
+
+struct Color: Grayscale {
+  init?(white: Double) {
+  
+  }
+}
+```
+
+
+
 ### 21-5. Subscript Requirements
+- 프로토콜에서 서브스크립트를 선언하고 형식에서 요구사항을 구현
+
+```swift
+Subscript Requirements
+
+protocol ProtocolName {
+  subscript(param) -> ReturnType { get set }
+}
+
+protocol List {
+  subscript(idx: Int) -> Int { get set } 
+}
+
+struct DataStore: List {
+  subscript(idx: Int) -> Int {
+    get {
+      return 0
+    }
+    set {
+    
+    }
+  }
+}
+```
+
 ### 21-6. Custom Type을 비교 연산자로 비교하기
+```swift
+Color 인스턴스를 == 연산자와 != 연산자로 비교할 수 있도록 구현해 주세요.
+
+import Foundation
+
+struct Color: Equatable {
+   let red: Int
+   let green: Int
+   let blue: Int
+   
+   static var black: Color {
+      return Color(red: 0, green: 0, blue: 0)
+   }
+   
+   static var white: Color {
+      return Color(red: 255, green: 255, blue: 255)
+   }
+    
+    static func ==(lhs: Color, rhs: Color) -> Bool {
+        return (lhs.red == rhs.red) && (lhs.green == rhs.green) && (lhs.blue == rhs.blue)
+    }
+    
+}
+
+// 아래에 있는 코드는 수정하지 마세요.
+let b = Color.black
+let w = Color.white
+
+print(b == w)
+```
 
 
 ## Protocol - 고급
 
 ### 21-7. Protocol Types ***
-### 21-8. Protocol composition ***
-### 21-9. Optional Requirements ***
-### 21-10. Protocol Extension ***
+- 프로토콜 타입과 프로토콜 적합성
+  - 프로토콜 타입
+  - 프로토콜과 타입 캐스팅
+  - 프로토콜 적합성
+  - 상속과 유사한 패턴 구현
 
+```swift
+Protocol Types
+
+protocol Resettable {
+  func reset()
+}
+
+class Size: Resettable {
+  var width = 0.0
+  var height = 0.0
+  
+  func reset() {
+    width = 0.0
+    height = 0.0
+  }
+}
+
+let s = Size()
+let r: Resettable = Size()
+r.reset() // 프로토콜을 활용하면 상속과 유사한 기능을 할 수 있다
+
+
+Protocol Conformance(프로토콜 적합성)
+
+instance is ProtocolName
+
+instance as ProtocolName
+instance as? ProtocolName
+instance as! ProtocolName
+
+protocl Resettable {
+  func reset()
+}
+
+class Size: Resettable {
+  var width = 0.0
+  var height = 0.0
+  
+  func reset() {
+    width = 0.0
+    height = 0.0
+  }
+}
+
+let s = Size()
+
+s is Resettable // true
+
+let r = Size() as Resettable // Size
+
+r as? Size // Size
+
+
+```
+
+
+
+### 21-8. Protocol composition ***
+- 다수의 프로토콜을 병합해서 하나의 임시 프로토콜을 만드는 방법
+
+
+
+
+### 21-9. Optional Requirements ***
+- 이 제목에서의 Optional은 말 그대로 '선택적'을 의미함, 기존 Swift의 옵셔널을 의미하는 것이 아님
+- 선택적 요구사항을 선언하는 방법
+  - @objc Attribute
+  - optional Modifier
+  - 선택적 요구사항과 옵셔널 체이닝
+
+```swift
+Optional Protocol Requirements
+
+@objc protocol ProtocolName {
+  @objc optional requirements
+}
+
+@objc protocol Drawable {
+  @objc optional var strokeWidth: Double { get set }
+  @objc optional var strokeColor: UIColor { get set }
+  func draw()
+  @objc optional func reset()
+}
+
+class Rectangle: Drawable {
+  func draw() {
+    
+  }
+}
+
+let r: Drawable = Rectangle()
+r.draw()
+r.strokeWidth // nil -> 형식에 해당 속성이 선언되어 있지 않다는 의미
+r.strokeColor // nil -> 형식에 해당 속성이 선언되어 있지 않다는 의미
+r.reset?() // nil -> 호출한 메소드가 구현되어 있지 않다는 의미
+```
+
+
+
+### 21-10. Protocol Extension ***
+- 프로토콜 익스텐션을 통해 공통 구현을 제공하는 방법
+  - 프로토콜 확장
+  - 멤버 우선순위
+  - 멤버 추가 형식 제한
+
+```swift
+Protocol Extension
+
+protocol Figure {
+  var name: String { get }
+  func draw()
+}
+
+extension Figure where Self: Equatable {
+  func draw() {
+    print("draw figure")
+  }
+}
+
+struct Rectangle: Figure, Equatable {
+  var name = ""
+  
+  func draw() {
+    print("draw rectangle")
+  }
+}
+
+let r = Rectangle()
+r.draw()
+
+```
 
 
 ## Memory, Value Typeand Reference Type
 - 메모리가 값을 저장하는 방법을 공부하고, 값 형식과 참조 형식의 차이점을 비교
 
 ### 22-1. Memory Basics
+- 메모리에 대한 기초적 내용
+  - 비트와 바이트
+  - 데이터 저장 방식
+  - 메모리 주소
+  - 메모리 공간 분류(스택과 힙)
+
+
+
+
 ### 22-2. Value Type vs Reference Type
+- 값 형식과 참조 형식이 메모리에 저장되는 방식
+
+- Value Type
+  - Structure
+  - Enumeration
+  - Tuple
+
+- Reference Type
+  - Class
+  - Closure
+
+```swift
+struct SizeValue {
+  var width = 0.0
+  var height = 0.0
+}
+
+var value = SizeValue()
+var value2 = value
+value2.width = 1.0
+value2.height = 2.0
+
+value // width 0, height 0
+value2 // width 1, height 2
+
+
+
+class SizeObject {
+  var width = 0.0
+  var height = 0.0
+}
+
+var object = SizeObject()
+
+var object2 = object
+
+object2.width = 1.0
+object2.height = 2.0
+
+object // width 1, height 2
+object2 // width 1, height 2 
+
+
+let v = SizeValue()
+let o = SizeObject()
+o.width = 1.0 
+o.height = 2.0
+
+값 형식
+==
+!=
+
+참조 형식
+==
+!=
+=== (항등연산자)
+!==
+```
+
+
+
 ### 22-3. ARC(Automatic Reference Counting)
+- Swift의 메모리 관리 모델인 ARC
+  - 메모리 관리 모델
+  - 소유 정책
+  - 참조 카운트
+  - 강한 참조
+
+- Automatic Reference Counting
+  - Strong Reference
+  - Weak Reference
+  - Unowned Reference
+
+
+
 ### 22-4. Strong Reference Cycle
+- 강한 참조 사이클이 발생하는 원인과 해결 방법
+  - 강한 참조 사이클
+  - 약한(weak) 참조
+  - 비소유(unowned) 참조
+
+```swift
+Strong Reference Cycle
+
+class Person {
+  var name = "John Doe"
+  car car: Car?
+  
+  deinit {
+    print("person deinit")
+  }
+}
+
+class Car {
+  var model: String
+  var lessee: Person?
+  
+  init(model: String) {
+    self.model = model
+  }
+  
+  deinit {
+    print("car deinit")
+  }
+}
+
+var person: Person? = Person()
+var rentedCar: Car? = Car(model: "Porsche")
+
+person?.car = rentedCar
+rentedCar?.lessee = person
+
+// 강한 참조 사이클 문제 
+person = nil // 여전히 Person Instance의 카운트는 1
+rentedCar = nil // 여전히 Car Instance의 카운트는 1
+
+```
+
+
 ### 22-5. Closure Capture List
 
 
