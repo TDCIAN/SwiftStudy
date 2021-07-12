@@ -6155,6 +6155,200 @@ try? parsing(data: [:]) // nil
 
 
 ### 24-2. do-catch Statements
+- do-catch 문을 통해 오류를 처리하는 방법
+  - do-catch 문법
+  - catch 블록 구현 방식
+
+```swift
+do-catch Statements
+
+do {
+  try expression
+  statements
+} catch pattern {
+  statements
+} catch pattern where condition {
+  statements
+}
+
+enum DataParsingError: Error {
+  case invalidType
+  case invalidField
+  case missingRequiredField(String)
+}
+
+func parsing(data: [String: Any]) throws {
+  guard let _ = data["name"] else {
+    throw DataparsingError.missingRequiredField("name")
+  }
+  
+  guard let _ = data["age] as? Int else {
+    throw DataParsingError.invalidType
+  }
+  
+  // Parsing 
+}
+
+do {
+  try parsing(data: [:])
+} catch DataParsingError.invalidType {
+  print("invalid type error")
+} catch {
+  print("handle error")
+}
+// handle error 까지만 출력됨
+
+패턴이 있는 경우에는 가장 까다로운 패턴부터 출력해야 한다
+
+func handleError() throws {
+  do {
+    try parsing(data: ["name": ""])
+  } catch {
+    if let error = error as? DataParsingError {
+      switch error {
+      case .invalidType:
+        print("invalid type")
+      default:
+        print("handle error")
+      }
+    }
+  }
+}
+
+```
+
+
 ### 24-3. Optional Try
+- 전달된 오류를 옵셔널 값을 처리하는 방법
+  - optional try
+  - forced try
+
+```swift
+enum DataParsingError: Error {
+  case invalidType
+  case invalidField
+  case missingRequiredField(String)
+}
+
+func parsing(data: [String: Any]) throws {
+  guard let _ = data["name"] else {
+    throw DataparsingError.missingRequiredField("name")
+  }
+  
+  guard let _ = data["age] as? Int else {
+    throw DataParsingError.invalidType
+  }
+  
+  // Parsing 
+}
+
+if let _ = try? parsing(data: [:]) {
+  print("success")
+} else {
+  print("fail")
+}
+
+do {
+  try parsing(data: [:])
+  print("success")
+} catch {
+  print("fail")
+}
+
+try! parsing(data: [:]) // 크래시 발생
+```
+
+
 ### 24-4. defer Statements
+- Scope 종료 시점으로 코드의 실행을 연기하는 방법
+  - defer 문법
+  - 코드 예약 및 실행 순서
+
+```swift
+defer {
+  statements
+}
+
+func processFile(path: String) {
+  print("1")
+  let file = FileHandle(forReadingAtPath: path)
+  
+  // Process
+  defer {
+    print("2")
+    file?.closeFile() // defer문을 통해 스코프 마지막에 실행되도록 변경  
+  }
+  
+  if path.hasSuffix(".jpg") {
+    print("3")
+    return 
+  }
+  
+  print("4")
+}
+/* 
+1
+3
+4
+2
+*/
+
+func testDefer() {
+  defer {
+    print(1)
+  }
+  defer {
+    print(2)
+  }
+  defer {
+    print(3)
+  }
+}
+/* 
+3
+2
+1
+-> 가장 마지막에 예약된 defer문이 가장 먼저 호출됨
+*/
+```
+
+
+
+
 ### 24-5. 오류 처리 패턴 구현하기
+```swift
+코드가 정상적으로 동작하도록 구현을 추가해 주세요.
+
+import Foundation
+
+// 오류 처리에 사용할 수 있도록 형식을 구현해 주세요.
+enum LoginError: Error {
+   case invalidId
+   case invalidPassword
+}
+
+// 오류를 던지는 함수로 수정해 주세요.
+func login(id: String, password: String) throws {
+   guard id == "admin" else {
+      // return false
+       throw LoginError.invalidId
+   }
+   
+   guard password == "1234" else {
+      // return false
+       throw LoginError.invalidPassword
+   }
+}
+
+// 여기에서 login(id:password:)를 호출하고 오류를 처리해 주세요.
+func run() throws {
+    do {
+       try login(id: "hacker", password: "1234")        
+    } catch {
+        print("Invalid ID")
+    }
+
+}
+
+try? run()
+```
